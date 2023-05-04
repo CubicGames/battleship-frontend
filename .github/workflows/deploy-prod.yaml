@@ -20,8 +20,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm i
-      - run: npm run build:prod
+      - run: yarn 
+      - run: yarn build-only 
       - name: upload file to s3
         uses: shallwefootball/upload-s3-action@v1.3.3
         with:
