@@ -1,0 +1,68 @@
+.app {
+  padding: 12px 24px; 
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.align-top {
+  align-items: flex-start;
+}
+
+.row>div {
+  flex: 1;
+}
+
+.row>div:nth-child(2) {
+  flex-grow: 1;
+}
+
+.main {
+  text-align: center;
+  padding: 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 45px;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallet-name {
+  font-size: x-large;
+  font-weight: 400;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px
+}
+
+.subtitle {
+  font-size: large;
+  margin-bottom: 6px;
+}
+
+.nft {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+
+.button {
+  cursor: pointer;
+  border-radius: 24px;
+  padding: 12px 30px;
+  background-color: #6118B1;
+  border: none;
+  color: white;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
