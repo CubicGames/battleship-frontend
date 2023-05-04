@@ -23,8 +23,8 @@ jobs:
 #      - run: npm run build:dev
       - name: Run install
         uses: borales/actions-yarn@v4
-      - run: yarn
-      - run: yarn build-only 
+        with:
+          cmd: build-only
       - name: upload file to s3
         uses: shallwefootball/upload-s3-action@v1.3.3
         with:
