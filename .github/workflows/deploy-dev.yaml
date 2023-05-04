@@ -24,6 +24,10 @@ jobs:
       - name: Run install
         uses: borales/actions-yarn@v4
         with:
+          cmd: 
+      - name: Run build
+        uses: borales/actions-yarn@v4
+        with:
           cmd: build-only
       - name: upload file to s3
         uses: shallwefootball/upload-s3-action@v1.3.3
