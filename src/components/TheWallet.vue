@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ethosForVue, TransactionBlock } from "ethos-connect-vue";
-import { ETHOS_EXAMPLE_CONTRACT } from "../constants";
+import { ETHOS_EXAMPLE_CONTRACT, BATTLESHIP_CONTRACT } from "../constants";
 
 const { context } = ethosForVue() || {};
 const { wallet } = context?.wallet || {};
@@ -24,6 +24,29 @@ const mint = async () => {
       showEffects: true,
     },
   });
+};
+
+const stateObjectId = "0x7e88f836732db7ed8d86c9e3dc5fbe2e11334b09812e8993b4d055af8a74cd65"
+
+const createGame = async () => {
+  if (!wallet) return;
+
+  const transactionBlock = new TransactionBlock();
+  transactionBlock.moveCall({
+    target: `${BATTLESHIP_CONTRACT}::battleship::new_game`,
+    arguments: [
+      transactionBlock.pure(stateObjectId),
+    ],
+  });
+
+  let result = await wallet.signAndExecuteTransactionBlock({
+    transactionBlock,
+    options: {
+      showEffects: true,
+    },
+  });
+
+  console.log(`createGame result=${JSON.stringify(result, null, 2)}`)
 };
 </script>
 
@@ -49,6 +72,9 @@ const mint = async () => {
     </div>
     <div>
       <button :onClick="mint" className="button">Mint A New NFT</button>
+    </div>
+    <div>
+      <button :onClick="createGame" className="button">Create a new game</button>
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div className="header">
-    <div>Ethos Connect Vue Example App</div>
+    <div></div>
     <AddressWidget />
   </div>
 </template>

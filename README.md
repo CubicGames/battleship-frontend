@@ -7,3 +7,8 @@ This sample app demonstrates how to use Ethos Connect in a Vue app.
 - Clone this repository
 - `yarn`
 - `yarn dev`
+
+## Building the app
+- Clone this repository
+- `yarn`
+- `yarn build-only`

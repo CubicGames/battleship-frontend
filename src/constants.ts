@@ -1,1 +1,13 @@
 export const ETHOS_EXAMPLE_CONTRACT = "0x1cbfdf7de5004f887705fa53bb345d4372e5004bd8b04a6f8868f5e1ca1af9c7"
+
+// HIT_MAX=2 version sui 0.31
+//export const BATTLESHIP_CONTRACT = "0xa498fc238b1bfc44ab4f9b96c8deb3aa753879a213eeab747def1166219b38fb"
+//export const STATE_OBJECT_ID = "0xecd604880b255c45f03f5f85ce4ffdbfc984da47841912f3b5f08f7a691ff34e"
+
+// HIT_MAX=2, zk, devnet
+//export const BATTLESHIP_CONTRACT = "0xa498fc238b1bfc44ab4f9b96c8deb3aa753879a213eeab747def1166219b38fb"
+//export const STATE_OBJECT_ID = "0xecd604880b255c45f03f5f85ce4ffdbfc984da47841912f3b5f08f7a691ff34e"
+
+// HIT_MAX=2, zk, testnet
+export const BATTLESHIP_CONTRACT = "0x49cf6d87968f9ded7adf3be7460bb69a15e1e4b83adfb40d76428db0bd785d06"
+export const STATE_OBJECT_ID = "0x1b25292c1d3592230edbbe90d9e9658024493d396f3c9cff5747c304bfc2cef1"
