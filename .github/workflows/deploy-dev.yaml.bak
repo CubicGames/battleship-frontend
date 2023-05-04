@@ -19,8 +19,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm i
-      - run: npm run build-only 
+#      - run: npm i
+#      - run: npm run build:dev
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install 
+      - name: Run build
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: build-only
       - name: upload file to s3
         uses: shallwefootball/upload-s3-action@v1.3.3
         with:
