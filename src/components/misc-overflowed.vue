@@ -10,7 +10,7 @@
           class="regulation text-capitalize"
           v-bind="props"
         >
-          Regulation
+          Game Rules
         </v-btn>
       </template>
       <v-card class="bg_setting">
