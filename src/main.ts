@@ -27,6 +27,10 @@ const config: EthosConfiguration = {
 const store = createStore({
   state () {
     return {
+      isRandomBoardDisabled: false,
+      isStartGameDisabled: true,
+      isListGamesDisabled: true,
+      isJoinGameDisabled: true,
       gameStage: 0,
       gameStarted: false,
       gameIndex: -1,
@@ -70,6 +74,18 @@ const store = createStore({
     }
   },
   mutations: {
+    setIsRandomBoardDisabled (state, value) {
+      state.isRandomBoardDisabled = value
+    },
+    setIsStartGameDisabled (state, value) {
+      state.isStartGameDisabled = value
+    },
+    setIsListGamesDisabled (state, value) {
+      state.isListGamesDisabled = value
+    },
+    setIsJoinGameDisabled (state, value) {
+      state.isJoinGameDisabled = value
+    },
     setGameStage (state, stage) {
       state.gameStage = stage
     },

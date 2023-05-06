@@ -144,6 +144,11 @@ const ListGames = async () => {
 resultGame.data.content.fields.value.fields.participants[0]
   console.log(`opponentAddress=${opponentAddress}`)
   store.commit('setOpponentAddress', opponentAddress)
+
+  store.commit('setIsRandomBoardDisabled', true)
+  store.commit('setIsStartGameDisabled', true)
+  store.commit('setIsListGamesDisabled', true)
+  store.commit('setIsJoinGameDisabled', false)
 /*
   const subscriptionId = await context.wallet.provider.subscribeEvent({
     filter: { Sender: opponentAddress },
@@ -169,6 +174,10 @@ const StartGame = async () => {
 
   store.commit('setGameStarted')
   store.commit('setGameStage', GameStage.WaitJoin)
+  store.commit('setIsRandomBoardDisabled', true)
+  store.commit('setIsStartGameDisabled', true)
+  store.commit('setIsListGamesDisabled', true)
+  store.commit('setIsJoinGameDisabled', true)
 
   getJoinedEventLoop()
 }
@@ -186,12 +195,20 @@ const JoinGame = async () => {
 
   store.commit('setGameStage', GameStage.WaitMove)
   store.commit('setGameStarted')
+  store.commit('setIsRandomBoardDisabled', true)
+  store.commit('setIsStartGameDisabled', true)
+  store.commit('setIsListGamesDisabled', true)
+  store.commit('setIsJoinGameDisabled', true)
 }
 
 const NewGame = () => {
   console.log("New game")
 
   // Reset all data
+  store.commit('setIsRandomBoardDisabled', false)
+  store.commit('setIsStartGameDisabled', true)
+  store.commit('setIsListGamesDisabled', true)
+  store.commit('setIsJoinGameDisabled', true)
   store.commit('setGameStage', GameStage.NotInGame)
   store.commit('unsetGameStarted')
   store.commit('setGameIndex', -1)
@@ -230,6 +247,9 @@ const GenRandomBoard = () => {
     }
   }
   store.commit('setMyBoardInShips', boardInShips)
+  store.commit('setIsStartGameDisabled', false)
+  store.commit('setIsListGamesDisabled', false)
+  store.commit('setIsJoinGameDisabled', true)
 }
 
 const createGame = async (boardInShips:string[][]) => {
@@ -576,7 +596,6 @@ const turn = async (boardInShips:string[][], gameIndex:number, hit:boolean, x:nu
           <div
             v-for="(cell, y) in row"
             :key="y"
-            @click="PlaceShipPart(x, y)"
             :class="`border-x border-y border-blue-400 border-solid w-8 h-8 hover:bg-gray-700 flex
             items-center justify-center material-icons-outlined text-4xl
             cursor-pointer text-cyan-500`"
@@ -610,15 +629,71 @@ const turn = async (boardInShips:string[][], gameIndex:number, hit:boolean, x:nu
 
     </div>
 
-    <button @click="NewGame" class="m-4 px-4 py-2 text-white bg-[#54A3FF] rounded uppercase font-bold hover:bg-[#67ADFF] duration-300">New Game</button>
+    <button @click="NewGame" class="m-4 px-4 py-2 text-white bg-[#54A3FF]
+rounded uppercase font-bold hover:bg-[#67ADFF] duration-300">RESTART GAME</button>
 
-    <button @click="GenRandomBoard" class="m-4 px-4 py-2 text-white bg-[#54A3FF] rounded uppercase font-bold hover:bg-[#67ADFF] duration-300">Random board</button>
+    <button @click="GenRandomBoard" :disabled="store.state.isRandomBoardDisabled" :class="{
+'m-4': true,
+'px-4': true,
+'py-2': true,
+'text-white': true,
+'rounded': true,
+'uppercase': true,
+'font-bold': true,
+'duration-300': true,
+'bg-[#54A3FF]': store.state.isRandomBoardDisabled ? false : true,
+'bg-[#808080]': store.state.isRandomBoardDisabled ? true : false,
+'hover:bg-[#67ADFF]': store.state.isRandomBoardDisabled ? false : true,
+    }">Random board</button>
 
-    <button @click="StartGame" class="m-4 px-4 py-2 text-white bg-[#54A3FF] rounded uppercase font-bold hover:bg-[#67ADFF] duration-300">Start Game</button>
+    <button @click="StartGame" :disabled="store.state.isStartGameDisabled"
+ :class="{
+'m-4': true,
+'px-4': true,
+'py-2': true,
+'text-white': true,
+'rounded': true,
+'uppercase': true,
+'font-bold': true,
+'duration-300': true,
+'bg-[#54A3FF]': store.state.isStartGameDisabled ? false : true,
+'bg-[#808080]': store.state.isStartGameDisabled ? true : false,
+'hover:bg-[#67ADFF]': store.state.isStartGameDisabled ? false : true,
+    }"
+ >Start Game</button>
 
-    <button @click="ListGames" class="m-4 px-4 py-2 text-white bg-[#54A3FF] rounded uppercase font-bold hover:bg-[#67ADFF] duration-300">List games</button>
+    <button @click="ListGames"
+ :disabled="store.state.isListGamesDisabled" :class="{
+'m-4': true,
+'px-4': true,
+'py-2': true,
+'text-white': true,
+'rounded': true,
+'uppercase': true,
+'font-bold': true,
+'duration-300': true,
+'bg-[#54A3FF]': store.state.isListGamesDisabled ? false : true,
+'bg-[#808080]': store.state.isListGamesDisabled ? true : false,
+'hover:bg-[#67ADFF]': store.state.isListGamesDisabled ? false : true,
+    }"
+>List games</button>
 
-    <button @click="JoinGame" class="m-4 px-4 py-2 text-white bg-[#54A3FF] rounded uppercase font-bold hover:bg-[#67ADFF] duration-300">Join Game</button>
+    <button @click="JoinGame"
+ :disabled="store.state.isJoinGameDisabled" :class="{
+'m-4': true,
+'px-4': true,
+'py-2': true,
+'text-white': true,
+'rounded': true,
+'uppercase': true,
+'font-bold': true,
+'duration-300': true,
+'bg-[#54A3FF]': store.state.isJoinGameDisabled ? false : true,
+'bg-[#808080]': store.state.isJoinGameDisabled ? true : false,
+'hover:bg-[#67ADFF]': store.state.isJoinGameDisabled ? false : true,
+    }"
+>Join Game</button>
+
 </main>
 </template>
 
