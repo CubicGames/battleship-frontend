@@ -14,6 +14,7 @@
     "@rollup/plugin-inject": "^5.0.3",
     "bigint-conversion": "^2.4.1",
     "circomlibjs": "github:jp4g/circomlibjs#browser-compatibility",
+    "constants": "^0.0.2",
     "ethos-connect-vue": "^0.0.45",
     "node-stdlib-browser": "^1.2.0",
     "process": "^0.11.10",
