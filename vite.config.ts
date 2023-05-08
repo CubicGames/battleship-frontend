@@ -19,7 +19,7 @@ export default defineConfig({
     outDir: "docs",
     target: "es2020",
     rollupOptions: {
-	    plugins: [inject({process: 'process', Buffer: ['Buffer', 'Buffer']})],
+	    plugins: [inject({process: 'process', Buffer: ['buffer', 'Buffer']})],
     }
   },
   optimizeDeps: {
