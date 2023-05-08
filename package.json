@@ -7,7 +7,7 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit",
-    "postinstall": "cp ./ethos-connect.dev.cjs ./node_modules/ethos-connect/dist/;cp ./ethos-connect.prod.cjs ./node_modules/ethos-connect/dist/;sed -i '/exports.fileLoader = fs.readFileSync;/d' node_modules/ejs/lib/ejs.js",
+    "postinstall": "cp ./ethos-connect.dev.cjs ./node_modules/ethos-connect/dist/;cp ./ethos-connect.prod.cjs ./node_modules/ethos-connect/dist/;",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {

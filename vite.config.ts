@@ -1,16 +1,12 @@
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
-import nodePolyfills from 'vite-plugin-node-stdlib-browser'
 import vue from '@vitejs/plugin-vue'
 import inject from '@rollup/plugin-inject'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), nodePolyfills()],
-    define: {
-	        'process.env': {}
-		  },
+  plugins: [vue()],
   server: {
     host: '0.0.0.0',
   },
@@ -23,7 +19,7 @@ export default defineConfig({
     outDir: "docs",
     target: "es2020",
     rollupOptions: {
-        plugins: [inject({process: 'process'})],
+	    plugins: [inject({process: 'process', Buffer: ['buffer', 'Buffer']})],
     }
   },
   optimizeDeps: {
