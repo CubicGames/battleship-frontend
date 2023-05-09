@@ -3,7 +3,7 @@
     <span class="close" @click="dialog = false"></span>
     <template v-slot:activator="{ props }">
       <v-btn variant="text" class="regulation text-capitalize" v-bind="props">
-        Regulation
+        Game Rules
       </v-btn>
     </template>
     <div class="bg_setting">
