@@ -11,13 +11,15 @@
   background: url("./image2.jpg") no-repeat;
   background-size: cover;
   background-position: center;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
-.app>div{
+.app > div {
   position: relative;
   width: 100% !important;
   height: 100% !important;
-  all:inherit !important;
+  all: inherit !important;
 }
 
 .header {
@@ -40,11 +42,11 @@
   align-items: flex-start;
 }
 
-.row>div {
+.row > div {
   flex: 1;
 }
 
-.row>div:nth-child(2) {
+.row > div:nth-child(2) {
   flex-grow: 1;
 }
 
@@ -65,7 +67,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px
+  gap: 6px;
 }
 
 .subtitle {
@@ -74,15 +76,23 @@
 }
 
 .nft {
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 }
 
 .button {
   cursor: pointer;
   border-radius: 24px;
   padding: 12px 30px;
-  background-color: #6118B1;
+  background-color: #6118b1;
   border: none;
   color: white;
-  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+
+@media screen and (max-height: 770px) {
+  .header {
+    margin-top: 20px;
+  }
 }

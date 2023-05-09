@@ -689,7 +689,7 @@ const turn = async (
   <main class="pt-2 text-center page_container">
     <div class="text-3xl font-mono font-bold italic text-blue-400 game_info">
       <div class="game_number">
-        <span class="name">game number</span>
+        <span class="name">Duo Code</span>
         <span class="val">
           {{
             store.state.gameIndex != -1
@@ -732,7 +732,7 @@ const turn = async (
     </div> -->
 
     <div class="game_content">
-      <div class="game_item">
+      <div class="game_item game_item_me">
         <h3 class="text-xl text-rose-500 title title_me">Me</h3>
         <div class="flex flex-col items-center game_chessboard">
           <div v-for="(row, x) in store.state.myBoard" :key="x" class="flex">
@@ -757,7 +757,7 @@ const turn = async (
         </div>
       </div>
       <div class="game_pk"></div>
-      <div class="game_item">
+      <div class="game_item game_item_opponent">
         <h3 class="text-xl text-rose-500 title title_opponent">Opponent</h3>
         <div class="flex flex-col items-center game_chessboard">
           <div
@@ -1022,6 +1022,20 @@ const turn = async (
   border-radius: 100px;
   color: #0D041F;
 }
+@media screen and (max-height: 770px) {
 
+ .game_logo{
+    scale: 0.9;
+    transform-origin: top;
+ }
+.game_item_me{
+    scale: 0.9;
+    transform-origin: top left;
+}
+.game_item_opponent{
+    scale: 0.9;
+    transform-origin: top right;
+}
+}
 </style>
 
