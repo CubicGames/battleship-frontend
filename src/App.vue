@@ -7,26 +7,32 @@ import image2 from './assets/image2.jpg'
 <template>
   <div class="front">
   <EthosConnectProvider>
-    <div className="app">
+    <div class="app">
       <TheContents />
     </div>
   </EthosConnectProvider>
   </div>
-  <img class="background" :src="image2" alt=""/>
+  <!-- <img class="background" :src="image2" alt=""/> -->
 </template>
 
 <style scoped>
-.background{
+/* .background{
     width: 100%;
     height: 100%;
     z-index:-1;
     position: absolute;
-}
+    left: 0;
+    top: 0;
+} */
 
 .front{
     width: 100%;
     height: 100%;
     z-index:1;
     position: absolute;
+    background: url("./assets/image2.jpg") no-repeat;
+    background-size: cover;
+    background-position: center;
 }
+
 </style>

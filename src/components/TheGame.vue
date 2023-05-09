@@ -669,7 +669,7 @@ const turn = async (
 
 <template>
   <!-- <Dialog class="regulation_box"></Dialog> -->
-  <main class="pt-8 text-center">
+  <main class="pt-8 text-center page_container">
     <div class="text-3xl font-mono font-bold italic text-blue-400 game_info">
       <div class="game_number">
         <span class="name">game number</span>
@@ -858,6 +858,14 @@ const turn = async (
 </template>
 
 <style scoped>
+.page_container{
+  height: calc(100% - 107px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
 .regulation_box {
   position: absolute;
   width: 128px;
@@ -874,8 +882,9 @@ const turn = async (
   justify-content: space-between;
   max-width: 1200px;
   min-width: 770px;
-  margin: 0 auto 86px;
+  margin: 0 auto;
   align-items: center;
+  width: 100%;
 }
 
 .game_number,
@@ -916,6 +925,7 @@ const turn = async (
   text-shadow: 2px 2px 12px rgba(1, 255, 255, 0.5);
 }
 .game_content {
+  width: 100%;
   max-width: 1200px;
   min-width: 770px;
   margin: 0 auto;
@@ -977,7 +987,7 @@ const turn = async (
 }
 .btn_list{
   width: 700px;
-  margin: 73px auto 0;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
