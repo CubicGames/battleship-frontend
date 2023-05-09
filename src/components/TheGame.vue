@@ -669,7 +669,7 @@ const turn = async (
 
 <template>
   <!-- <Dialog class="regulation_box"></Dialog> -->
-  <main class="pt-8 text-center page_container">
+  <main class="pt-2 text-center page_container">
     <div class="text-3xl font-mono font-bold italic text-blue-400 game_info">
       <div class="game_number">
         <span class="name">game number</span>
