@@ -27,6 +27,7 @@ const config: EthosConfiguration = {
 const store = createStore({
   state () {
     return {
+      dialog: false,
       isRandomBoardDisabled: false,
       isStartGameDisabled: true,
       isListGamesDisabled: true,
@@ -74,6 +75,9 @@ const store = createStore({
     }
   },
   mutations: {
+    setDialog (state, value) {
+      state.dialog = value
+    },
     setIsRandomBoardDisabled (state, value) {
       state.isRandomBoardDisabled = value
     },

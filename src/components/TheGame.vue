@@ -249,6 +249,7 @@ const NewGame = () => {
   console.log("New game");
 
   // Reset all data
+  store.commit('setDialog', false);
   store.commit("setIsRandomBoardDisabled", false);
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
@@ -514,6 +515,7 @@ const getWonEventLoop = () => {
 
         store.commit("setGameWinner", winner);
         store.commit("setGameStage", GameStage.GameOver);
+        store.commit('setDialog', true)
         clearInterval(intervalId);
       });
   }, 5000);
@@ -669,6 +671,21 @@ const turn = async (
 
 <template>
   <!-- <Dialog class="regulation_box"></Dialog> -->
+    <v-dialog
+      v-model="store.state.dialog"
+      width="auto"
+    >
+      <v-card>
+        <v-card-text>
+          {{ store.state.gameWinner === '' ?
+'' :  store.state.gameWinner === store.state.opponentAddress ? 'You lose':
+'You win'}}
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" block @click="store.state.dialog = false">Ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   <main class="pt-2 text-center page_container">
     <div class="text-3xl font-mono font-bold italic text-blue-400 game_info">
       <div class="game_number">
