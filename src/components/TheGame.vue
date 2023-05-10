@@ -299,8 +299,6 @@ const GenRandomBoard = () => {
   store.commit("setIsStartGameDisabled", false);
   store.commit("setIsListGamesDisabled", false);
   store.commit("setIsJoinGameDisabled", true);
-  // 删除
-  store.commit("setDialog", true);
 };
 
 const createGame = async (boardInShips: string[][]) => {
