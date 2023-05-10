@@ -756,7 +756,7 @@ const turn = async (
           </div>
         </div>
       </div>
-      <div class="game_pk"></div>
+      <!-- <div class="game_pk"></div> -->
       <div class="game_item game_item_opponent">
         <h3 class="text-xl text-rose-500 title title_opponent">Opponent</h3>
         <div class="flex flex-col items-center game_chessboard">
@@ -791,7 +791,7 @@ const turn = async (
    <div class="btn_list">
      <button
       @click="NewGame"
-      class="px-5 py-2 bg-[#01FFFF] uppercase font-bold hover:bg-[#67ADFF] duration-300 btn-item"
+      class="px-5 py-2 uppercase font-bold hover:bg-[#67ADFF] duration-300 btn-item btn-item-default"
     >
       NEW GAME
     </button>
@@ -805,10 +805,10 @@ const turn = async (
         uppercase: true,
         'font-bold': true,
         'duration-300': true,
-        'bg-[#01FFFF]': store.state.isRandomBoardDisabled ? false : true,
-        'bg-[#31B4B4]': store.state.isRandomBoardDisabled ? true : false,
         'hover:bg-[#67ADFF]': store.state.isRandomBoardDisabled ? false : true,
         'btn-item': true,
+        'btn-item-default':store.state.isRandomBoardDisabled ? false : true,
+        'btn-item-disabled': store.state.isRandomBoardDisabled ? true : false
       }"
     >
       <span :class="{'opacity-30': store.state.isRandomBoardDisabled ? true : false}">RANDOM BOARD</span>
@@ -823,8 +823,8 @@ const turn = async (
         uppercase: true,
         'font-bold': true,
         'duration-300': true,
-        'bg-[#01FFFF]': store.state.isStartGameDisabled ? false : true,
-        'bg-[#31B4B4]': store.state.isStartGameDisabled ? true : false,
+        'btn-item-default': store.state.isStartGameDisabled ? false : true,
+        'btn-item-disabled': store.state.isStartGameDisabled ? true : false,
         'hover:bg-[#67ADFF]': store.state.isStartGameDisabled ? false : true,
         'btn-item': true,
 
@@ -842,8 +842,8 @@ const turn = async (
         uppercase: true,
         'font-bold': true,
         'duration-300': true,
-        'bg-[#01FFFF]': store.state.isListGamesDisabled ? false : true,
-        'bg-[#31B4B4]': store.state.isListGamesDisabled ? true : false,
+        'btn-item-default': store.state.isListGamesDisabled ? false : true,
+        'btn-item-disabled': store.state.isListGamesDisabled ? true : false,
         'hover:bg-[#67ADFF]': store.state.isListGamesDisabled ? false : true,
         'btn-item': true,
 
@@ -861,8 +861,8 @@ const turn = async (
         uppercase: true,
         'font-bold': true,
         'duration-300': true,
-        'bg-[#01FFFF]': store.state.isJoinGameDisabled ? false : true,
-        'bg-[#31B4B4]': store.state.isJoinGameDisabled ? true : false,
+        'btn-item-default': store.state.isJoinGameDisabled ? false : true,
+        'btn-item-disabled': store.state.isJoinGameDisabled ? true : false,
         'hover:bg-[#67ADFF]': store.state.isJoinGameDisabled ? false : true,
         'btn-item': true,
 
@@ -921,7 +921,7 @@ const turn = async (
   height: 184px;
   background: url("../assets/game/logo.png") no-repeat;
   background-position: center;
-  background-size: cover;
+  background-size: 100% 100%;
 }
 .name {
   color: #01ffff;
@@ -1021,6 +1021,16 @@ const turn = async (
   box-sizing: border-box;
   border-radius: 100px;
   color: #0D041F;
+}
+.btn-item-default {
+  background: linear-gradient(180deg, #ffffff 0%, #01ffff 100%);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 100px;
+}
+.btn-item-disabled {
+  background: linear-gradient(180deg, #63D2EB 0%, #2CA8C4 100%) !important;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 100px;
 }
 @media screen and (max-height: 770px) {
 
