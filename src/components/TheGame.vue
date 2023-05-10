@@ -7,6 +7,10 @@ import { BATTLESHIP_CONTRACT, STATE_OBJECT_ID } from "../constants";
 import { GenerateBoardConfig } from "../board";
 import { GenBoardProof, GenShotProof } from "../index";
 import Dialog from "./misc-overflowed.vue";
+import defeatImg from "../assets/game/defeat_img.png";
+import defeatLight from "../assets/game/light1.png";
+import winImg from "../assets/game/win_img.png";
+import winLight from "../assets/game/light2.png";
 
 let showPopup = ref(false);
 const shipLengths = [5, 4, 3, 3, 2];
@@ -249,7 +253,7 @@ const NewGame = () => {
   console.log("New game");
 
   // Reset all data
-  store.commit('setDialog', false);
+  store.commit("setDialog", false);
   store.commit("setIsRandomBoardDisabled", false);
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
@@ -515,7 +519,7 @@ const getWonEventLoop = () => {
 
         store.commit("setGameWinner", winner);
         store.commit("setGameStage", GameStage.GameOver);
-        store.commit('setDialog', true)
+        store.commit("setDialog", true);
         clearInterval(intervalId);
       });
   }, 5000);
@@ -670,12 +674,46 @@ const turn = async (
 </script>
 
 <template>
+  <div v-if="store.state.dialog" class="game_result_modal">
+    <div
+      :class="[
+        'result_modal_bg',
+        store.state.gameWinner !== '' &&
+        store.state.gameWinner === store.state.opponentAddress
+          ? 'result_modal_bg_defeat'
+          : 'result_modal_bg_win',
+      ]"
+    ></div>
+    <div class="result_modal_container">
+      <div class="result_modal_img">
+        <img
+          v-if="
+            store.state.gameWinner !== '' &&
+            store.state.gameWinner === store.state.opponentAddress
+          "
+          :src="defeatImg"
+          alt=""
+        />
+        <img
+          v-if="
+            store.state.gameWinner !== '' &&
+            store.state.gameWinner !== store.state.opponentAddress
+          "
+          :src="winImg"
+          alt=""
+        />
+      </div>
+      <div class="result_close" @click="store.state.dialog = false">Close</div>
+    </div>
+  </div>
   <!-- <Dialog class="regulation_box"></Dialog> -->
-    <v-dialog
+  <!-- <v-dialog
       v-model="store.state.dialog"
-      width="auto"
-    >
-      <v-card>
+      width="100%"
+      height="100%"
+    > -->
+  <!-- <div class="game_result_modal">dddd</div> -->
+  <!-- <v-card>
         <v-card-text>
           {{ store.state.gameWinner === '' ?
 '' :  store.state.gameWinner === store.state.opponentAddress ? 'You lose':
@@ -684,8 +722,8 @@ const turn = async (
         <v-card-actions>
           <v-btn color="primary" block @click="store.state.dialog = false">Ok</v-btn>
         </v-card-actions>
-      </v-card>
-    </v-dialog>
+      </v-card> -->
+  <!-- </v-dialog> -->
   <main class="pt-2 text-center page_container">
     <div class="text-3xl font-mono font-bold italic text-blue-400 game_info">
       <div class="game_number">
@@ -788,94 +826,180 @@ const turn = async (
       </div>
     </div>
 
-   <div class="btn_list">
-     <button
-      @click="NewGame"
-      class="px-5 py-2 uppercase font-bold hover:bg-[#67ADFF] duration-300 btn-item btn-item-default"
-    >
-      NEW GAME
-    </button>
+    <div class="btn_list">
+      <button
+        @click="NewGame"
+        class="px-5 py-2 uppercase font-bold hover:bg-[#67ADFF] duration-300 btn-item btn-item-default"
+      >
+        NEW GAME
+      </button>
 
-    <button
-      @click="GenRandomBoard"
-      :disabled="store.state.isRandomBoardDisabled"
-      :class="{
-        'px-5': true,
-        'py-2': true,
-        uppercase: true,
-        'font-bold': true,
-        'duration-300': true,
-        'hover:bg-[#67ADFF]': store.state.isRandomBoardDisabled ? false : true,
-        'btn-item': true,
-        'btn-item-default':store.state.isRandomBoardDisabled ? false : true,
-        'btn-item-disabled': store.state.isRandomBoardDisabled ? true : false
-      }"
-    >
-      <span :class="{'opacity-30': store.state.isRandomBoardDisabled ? true : false}">RANDOM BOARD</span>
-    </button>
+      <button
+        @click="GenRandomBoard"
+        :disabled="store.state.isRandomBoardDisabled"
+        :class="{
+          'px-5': true,
+          'py-2': true,
+          uppercase: true,
+          'font-bold': true,
+          'duration-300': true,
+          'hover:bg-[#67ADFF]': store.state.isRandomBoardDisabled
+            ? false
+            : true,
+          'btn-item': true,
+          'btn-item-default': store.state.isRandomBoardDisabled ? false : true,
+          'btn-item-disabled': store.state.isRandomBoardDisabled ? true : false,
+        }"
+      >
+        <span
+          :class="{
+            'opacity-30': store.state.isRandomBoardDisabled ? true : false,
+          }"
+          >RANDOM BOARD</span
+        >
+      </button>
 
-    <button
-      @click="StartGame"
-      :disabled="store.state.isStartGameDisabled"
-      :class="{
-        'px-5': true,
-        'py-2': true,
-        uppercase: true,
-        'font-bold': true,
-        'duration-300': true,
-        'btn-item-default': store.state.isStartGameDisabled ? false : true,
-        'btn-item-disabled': store.state.isStartGameDisabled ? true : false,
-        'hover:bg-[#67ADFF]': store.state.isStartGameDisabled ? false : true,
-        'btn-item': true,
+      <button
+        @click="StartGame"
+        :disabled="store.state.isStartGameDisabled"
+        :class="{
+          'px-5': true,
+          'py-2': true,
+          uppercase: true,
+          'font-bold': true,
+          'duration-300': true,
+          'btn-item-default': store.state.isStartGameDisabled ? false : true,
+          'btn-item-disabled': store.state.isStartGameDisabled ? true : false,
+          'hover:bg-[#67ADFF]': store.state.isStartGameDisabled ? false : true,
+          'btn-item': true,
+        }"
+      >
+        <span
+          :class="{
+            'opacity-30': store.state.isStartGameDisabled ? true : false,
+          }"
+          >START GAME</span
+        >
+      </button>
 
-      }"
-    >
-      <span :class="{'opacity-30': store.state.isStartGameDisabled ? true : false}">START GAME</span>
-    </button>
+      <button
+        @click="ListGames"
+        :disabled="store.state.isListGamesDisabled"
+        :class="{
+          'px-5': true,
+          'py-2': true,
+          uppercase: true,
+          'font-bold': true,
+          'duration-300': true,
+          'btn-item-default': store.state.isListGamesDisabled ? false : true,
+          'btn-item-disabled': store.state.isListGamesDisabled ? true : false,
+          'hover:bg-[#67ADFF]': store.state.isListGamesDisabled ? false : true,
+          'btn-item': true,
+        }"
+      >
+        <span
+          :class="{
+            'opacity-30': store.state.isListGamesDisabled ? true : false,
+          }"
+          >LIST GAMES</span
+        >
+      </button>
 
-    <button
-      @click="ListGames"
-      :disabled="store.state.isListGamesDisabled"
-      :class="{
-        'px-5': true,
-        'py-2': true,
-        uppercase: true,
-        'font-bold': true,
-        'duration-300': true,
-        'btn-item-default': store.state.isListGamesDisabled ? false : true,
-        'btn-item-disabled': store.state.isListGamesDisabled ? true : false,
-        'hover:bg-[#67ADFF]': store.state.isListGamesDisabled ? false : true,
-        'btn-item': true,
-
-      }"
-    >
-      <span :class="{'opacity-30': store.state.isListGamesDisabled ? true : false}">LIST GAMES</span>
-    </button>
-
-    <button
-      @click="JoinGame"
-      :disabled="store.state.isJoinGameDisabled"
-      :class="{
-        'px-5': true,
-        'py-2': true,
-        uppercase: true,
-        'font-bold': true,
-        'duration-300': true,
-        'btn-item-default': store.state.isJoinGameDisabled ? false : true,
-        'btn-item-disabled': store.state.isJoinGameDisabled ? true : false,
-        'hover:bg-[#67ADFF]': store.state.isJoinGameDisabled ? false : true,
-        'btn-item': true,
-
-      }"
-    >
-      <span :class="{'opacity-30': store.state.isJoinGameDisabled ? true : false}">JOIN GAME</span>
-    </button>
-   </div>
+      <button
+        @click="JoinGame"
+        :disabled="store.state.isJoinGameDisabled"
+        :class="{
+          'px-5': true,
+          'py-2': true,
+          uppercase: true,
+          'font-bold': true,
+          'duration-300': true,
+          'btn-item-default': store.state.isJoinGameDisabled ? false : true,
+          'btn-item-disabled': store.state.isJoinGameDisabled ? true : false,
+          'hover:bg-[#67ADFF]': store.state.isJoinGameDisabled ? false : true,
+          'btn-item': true,
+        }"
+      >
+        <span
+          :class="{
+            'opacity-30': store.state.isJoinGameDisabled ? true : false,
+          }"
+          >JOIN GAME</span
+        >
+      </button>
+    </div>
   </main>
 </template>
 
 <style scoped>
-.page_container{
+.game_result_modal {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-image: url("../assets/image2.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.result_modal_bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(16, 11, 46, 0.8);
+  backdrop-filter: blur(4px);
+}
+.result_modal_bg_win {
+  background-image: url("../assets/game/light2.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.result_modal_bg_defeat {
+  background-image: url("../assets/game/light1.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.result_modal_container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.result_modal_img {
+  width: 640px;
+  height: 545px;
+}
+.result_modal_img img {
+  width: 100%;
+  height: 100%;
+}
+.result_close {
+  width: 82px;
+  height: 34px;
+  background: linear-gradient(180deg, #ffffff 0%, #01ffff 100%);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 100px;
+  text-align: center;
+  line-height: 34px;
+  color: #0d041f;
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 30px;
+  cursor: pointer;
+}
+
+.page_container {
   height: calc(100% - 107px);
   display: flex;
   flex-direction: column;
@@ -1002,25 +1126,25 @@ const turn = async (
   background-position: center;
   background-size: cover;
 }
-.btn_list{
+.btn_list {
   width: 700px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.btn-item{
+.btn-item {
   font-size: 14px;
-  font-family: 'Barlow';
+  font-family: "Barlow";
   font-style: normal;
   font-weight: 700;
   font-size: 14px;
   line-height: 18px;
   text-align: center;
-  color: #0D041F;
+  color: #0d041f;
   box-sizing: border-box;
   border-radius: 100px;
-  color: #0D041F;
+  color: #0d041f;
 }
 .btn-item-default {
   background: linear-gradient(180deg, #ffffff 0%, #01ffff 100%);
@@ -1028,24 +1152,23 @@ const turn = async (
   border-radius: 100px;
 }
 .btn-item-disabled {
-  background: linear-gradient(180deg, #63D2EB 0%, #2CA8C4 100%) !important;
+  background: linear-gradient(180deg, #63d2eb 0%, #2ca8c4 100%) !important;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   border-radius: 100px;
 }
 @media screen and (max-height: 770px) {
-
- .game_logo{
+  .game_logo {
     scale: 0.9;
     transform-origin: top;
- }
-.game_item_me{
+  }
+  .game_item_me {
     scale: 0.9;
     transform-origin: top left;
-}
-.game_item_opponent{
+  }
+  .game_item_opponent {
     scale: 0.9;
     transform-origin: top right;
-}
+  }
 }
 </style>
 
