@@ -175,11 +175,16 @@ const ListGames = async () => {
     );
     return;
   }
-  store.commit("setToJoinGameIndex", gameIndex);
   let opponentAddress =
     resultGame.data.content.fields.value.fields.participants[0];
   console.log(`opponentAddress=${opponentAddress}`);
+  console.log(`context.wallet.wallet.address=${context.wallet.wallet.address}`);
+  if (opponentAddress === context.wallet.wallet.address) {
+    console.log(`Cannot join a game created by oneself`);
+    return;
+  }
   store.commit("setOpponentAddress", opponentAddress);
+  store.commit("setToJoinGameIndex", gameIndex);
 
   store.commit("setIsRandomBoardDisabled", true);
   store.commit("setIsStartGameDisabled", true);
