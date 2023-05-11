@@ -6,14 +6,14 @@
         Game Rules
       </v-btn>
     </template>
-    <div class="bg_setting">
+    <div class="bg_setting bg_setting_top">
       <v-card-title>
         <div class="pl-2">
           <span class="game_rules">Battleship Demo Game Rules</span>
         </div>
       </v-card-title>
     </div>
-    <v-card class="bg_setting bg_setting_top">
+    <v-card class="bg_setting bg_setting_content">
       <v-card-text>
         <span class="heading_text">Game Introduction:</span>
       </v-card-text>
@@ -121,7 +121,7 @@ would have hit on their third try.</span>
       </div>
     </v-card>
     <div class="bg_setting bg_setting_bottom pa-6">
-      <div class="bg_setting d-flex justify-center">
+      <div class="d-flex justify-center">
         <v-btn class="got_it_box" variant="tonal" @click="dialog = false">
           Got it
         </v-btn>
@@ -191,12 +191,7 @@ export default {
   line-height: 40px;
   /* identical to box height, or 143% */
 
-  background: linear-gradient(
-    90.2deg,
-    #43cefc -13.94%,
-    #de15f3 3.66%,
-    #fef3ff 60.22%
-  );
+  background: linear-gradient(90.2deg, #01FFFF 0.18%, #FFFFFF 50%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -217,8 +212,14 @@ export default {
 .bg_setting_top {
   border-radius: 12px 12px 0 0 !important;
 }
+.bg_setting_content{
+  border-radius: 0 !important;
+}
 .bg_setting_bottom {
   border-radius: 0 0 12px 12px !important;
+  background-image: url('../assets/game/footer_bg.svg');
+  background-repeat: no-repeat;
+  background-size: 100% 100% ;
 }
 .heading_text {
   /* Game Introduction: */
