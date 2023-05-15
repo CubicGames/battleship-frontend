@@ -18,8 +18,8 @@ const vuetify = createVuetify({
 
 const config: EthosConfiguration = {
   apiKey: "vue-example-app",
-  chain : "sui:testnet",
-  network : "https://fullnode.testnet.sui.io/",
+  chain : "sui:mainnet",
+  network : "https://fullnode.mainnet.sui.io/",
   walletAppUrl : "https://ethoswallet.xyz",
 };
 
