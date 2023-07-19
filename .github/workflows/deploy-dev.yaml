@@ -21,22 +21,32 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: yarn 
       - run: yarn build-only 
-      - name: upload file to s3
-        uses: shallwefootball/upload-s3-action@v1.3.3
+      - name: upload file to tencent cos
+        uses: TencentCloud/cos-action@v1
         with:
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_bucket: ${{ vars.DEV_AWS_S3_BUCKET }}
-          source_dir: 'docs'
-          destination_dir: ''
-      - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: ${{ vars.DEV_DISTRIBUTION }}
-          PATHS: "/*"
-          AWS_REGION: "us-east-1"
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          secret_id: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          secret_key: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+          cos_bucket: ${{ secrets.COS_BUCKET }}
+          cos_region: ${{ secrets.COS_REGION }}
+          local_path: docs
+          remote_path: '' 
+          clean: true
+#      - name: upload file to s3
+#        uses: shallwefootball/upload-s3-action@v1.3.3
+#        with:
+#          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws_bucket: ${{ vars.DEV_AWS_S3_BUCKET }}
+#          source_dir: 'docs'
+#          destination_dir: ''
+#      - name: Invalidate CloudFront
+#        uses: chetan/invalidate-cloudfront-action@v2
+#        env:
+#          DISTRIBUTION: ${{ vars.DEV_DISTRIBUTION }}
+#          PATHS: "/*"
+#          AWS_REGION: "us-east-1"
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 #      - name: send telegram message on deploy
 #        uses: appleboy/telegram-action@master
 #        with:
