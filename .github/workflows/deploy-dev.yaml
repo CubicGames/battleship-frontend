@@ -24,7 +24,7 @@ jobs:
       - name: upload file to tencent cos
         uses: haloislet/cos-action@v2 
         with:
-          COMMAND: coscmd upload -r ./ /
+          COMMAND: coscmd upload -r ./docs/ /
           SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
           SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
           BUCKET: ${{ secrets.COS_BUCKET }}
