@@ -46,4 +46,4 @@ jobs:
       - name: upload file and invalidate teo
         run: |
             coscmd upload -r ./docs/ /
-            tccli teo CreatePurgeTask --cli-unfold-argument  --cli-unfold-argument --Targets $URL  --Type purge_url --ZoneId ${ZONE_ID}
+            tccli teo CreatePurgeTask --cli-unfold-argument  --cli-unfold-argument --Targets $URL  --Type purge_url --ZoneId $ZONE_ID
