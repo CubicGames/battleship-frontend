@@ -36,6 +36,8 @@ jobs:
           SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
           BUCKET: ${{ secrets.COS_BUCKET }}
           REGION: ${{ secrets.COS_REGION }}
+          URL: ${{ vars.URL }}
+          ZONE_ID: ${{ vars.ZONE_ID }}
         run: |
            coscmd config -a $SECRET_ID -s $SECRET_KEY -b $BUCKET -r $REGION
            tccli configure set secretId $SECRET_ID
@@ -44,4 +46,4 @@ jobs:
       - name: upload file and invalidate teo
         run: |
             coscmd upload -r ./docs/ /
-            tccli teo CreatePurgeTask --cli-unfold-argument  --cli-unfold-argument --Targets http://battleship-dev.cubicgames.xyz/ --Type purge_url --ZoneId zone-2l9wjhsgzmhu
+            tccli teo CreatePurgeTask --cli-unfold-argument  --cli-unfold-argument --Targets $URL  --Type purge_url --ZoneId ${ZONE_ID}
