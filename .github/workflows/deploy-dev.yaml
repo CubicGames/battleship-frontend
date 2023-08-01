@@ -28,7 +28,6 @@ jobs:
         run: |
            sudo pip install coscmd
            sudo pip  install tccli
-
       - name: confgiure env
 #        uses: haloislet/cos-action@v2 
         env:
