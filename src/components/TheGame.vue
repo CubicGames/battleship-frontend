@@ -768,7 +768,7 @@ onMounted(() => {
   if (localStorage.getItem("chessPieces") || localStorage.getItem("chessboard")) {
     const _chessPieces = JSON.parse(localStorage.getItem("chessPieces") || '{}');
     const _chessboard = JSON.parse(localStorage.getItem("chessboard") || '{}');
-    const _isLockShip = localStorage.getItem('setIsLockShip') || '0';
+    const _isLockShip = localStorage.getItem('setIsLockShip');
     store.commit("resetChessPieces", _chessPieces);
     store.commit("resetChessboard", _chessboard);
     store.commit("setIsLockShip", _isLockShip);
@@ -1079,7 +1079,7 @@ const NewGameFn = () => {
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", true);
   store.commit("setIsNewGameDisabled", true);
-   store.commit("setIsLockShip", '0');
+  store.commit("setIsLockShip", '0');
 
 
 
@@ -1120,6 +1120,8 @@ const getShipNumFn = () => {
 }
 console.log("--------------------------ppp")
 console.log(store.state.myBoard)
+console.log("--------------------------oooo")
+console.log(store.state.isLockShip)
 </script>
 
 <template>
@@ -1178,7 +1180,8 @@ console.log(store.state.myBoard)
               <div v-for="(cell, cellIndex) in row" :key="cellIndex" :id="rowIndex + '-' + cellIndex"
                 class="chessboard-cell" :class="{ 'occupied': cell && cell.pieceId !== null }"
                 @drop="drop($event, cellIndex, rowIndex, cell?.piece, '1')" @dragover.prevent>
-                <el-tooltip :disabled="store.state.isLockShip == '1'" class="box-item" effect="dark" content="Click to rotate 90 degrees" placement="right">
+                <el-tooltip :disabled="store.state.isLockShip == '1'" class="box-item" effect="dark"
+                  content="Click to rotate 90 degrees" placement="right">
                   <div v-if="cell && cell.pieceId !== null" class="chess-piece" :style="{
                     backgroundImage: `url(${cell.piece?.imageUrl})`,
                     position: 'absolute',
@@ -1187,13 +1190,15 @@ console.log(store.state.myBoard)
                     transformOrigin: 'bottom',
                     backgroundSize: '100% 100%',
                     cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
-                  }" :draggable="store.state.isLockShip == '0'" @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
+                  }" :draggable="store.state.isLockShip == '0'"
+                    @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
                     @click="rotatePiece(cellIndex, rowIndex)">
                   </div>
 
-                  <img v-if="store.state.myBoard[rowIndex][cellIndex] == 'm'" :src="mIcon" />
-                  <img class="x-icon" v-if="store.state.myBoard[rowIndex][cellIndex] == 'X'" :src="xIcon" />
+
                 </el-tooltip>
+                <img v-if="store.state.myBoard[rowIndex][cellIndex] == 'm'" :src="mIcon" />
+                <img class="x-icon" v-if="store.state.myBoard[rowIndex][cellIndex] == 'X'" :src="xIcon" />
               </div>
             </div>
           </div>
@@ -1430,10 +1435,11 @@ console.log(store.state.myBoard)
   flex: 1;
 }
 
-.chessboard-cell img{
+.chessboard-cell img {
   position: relative;
   z-index: 100;
 }
+
 .chessboard-cell .x-icon {
   position: absolute;
   width: 37px;
@@ -1442,6 +1448,7 @@ console.log(store.state.myBoard)
   left: -3.5px;
   max-width: max-content;
 }
+
 /* .occupied {
   background-color: lightgray;
 } */
@@ -1792,6 +1799,5 @@ console.log(store.state.myBoard)
     scale: 0.9;
     transform-origin: top right;
   }
-}
-</style>
+}</style>
 
