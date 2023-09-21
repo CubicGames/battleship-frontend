@@ -22,6 +22,8 @@ import ship4_h_img from '../assets/ship4_h.png';
 import ship4_v_img from '../assets/ship4_v.png';
 import { ElMessage } from 'element-plus'
 import mIcon from '../assets/game/m.svg';
+import xIcon from '../assets/game/x.svg';
+import mXIcon from '../assets/game/mx.svg';
 // 新增
 // import { DraggableItem } from "vuedraggable";
 
@@ -255,6 +257,20 @@ const StartGame = async () => {
     console.log(`Not enough ships: ${store.state.myBoardInShips.length}`);
     return;
   }
+  // console.log(store.state.chessPieces)
+  let allDot = [];
+
+  for (let i = 0; i < store.state.chessPieces.length; i++) {
+    // console.log("-----------------------------------bbbbbb")
+    allDot.push(...store.state.chessPieces[i].coordinate);
+  }
+  console.log(allDot)
+
+  for (let i = 0; i < allDot.length; i++) {
+    store.commit("setMyBoard", { value: "O", x: allDot[i][0], y: allDot[i][1] });
+  }
+
+  console.log(store.state.myBoard);
 
   localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
   localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
@@ -285,6 +301,20 @@ const JoinGame = async () => {
     console.log(`Not enough ships: ${store.state.myBoardInShips.length}`);
     return;
   }
+  let allDot = [];
+
+  for (let i = 0; i < store.state.chessPieces.length; i++) {
+    // console.log("-----------------------------------bbbbbb")
+    allDot.push(...store.state.chessPieces[i].coordinate);
+  }
+  console.log(allDot)
+
+  for (let i = 0; i < allDot.length; i++) {
+    store.commit("setMyBoard", { value: "O", x: allDot[i][0], y: allDot[i][1] });
+  }
+
+  console.log(store.state.myBoard);
+
   localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
   localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
   await joinGame(store.state.toJoinGameIndex, store.state.myBoardInShips);
@@ -345,6 +375,7 @@ const JoinGame = async () => {
 //       store.commit("setMyBoard", { value: board[i][j], x: i, y: j });
 //     }
 //   }
+//   console.log(store.state.myBoard)
 //   store.commit("setMyBoardInShips", boardInShips);
 //   store.commit("setIsStartGameDisabled", false);
 //   store.commit("setIsListGamesDisabled", false);
@@ -745,76 +776,76 @@ onMounted(() => {
 })
 
 const defaultDataFn = () => {
-   for (let i = 0; i < GRID_CELL_COUNT; i++) {
-      store.commit("addChessboard", { x: i, val: [] });
-      // chessboard.value[i] = [];
-      for (let j = 0; j < GRID_CELL_COUNT; j++) {
-        store.commit("setChessboard", {
-          x: i, y: j, val: {
-            pieceId: null,
-            x: j / GRID_CELL_COUNT,
-            y: i / GRID_CELL_COUNT,
-            width: 1 / GRID_CELL_COUNT,
-            height: 1 / GRID_CELL_COUNT,
-            rotation: 0,
-          }
-        });
-      }
+  for (let i = 0; i < GRID_CELL_COUNT; i++) {
+    store.commit("addChessboard", { x: i, val: [] });
+    // chessboard.value[i] = [];
+    for (let j = 0; j < GRID_CELL_COUNT; j++) {
+      store.commit("setChessboard", {
+        x: i, y: j, val: {
+          pieceId: null,
+          x: j / GRID_CELL_COUNT,
+          y: i / GRID_CELL_COUNT,
+          width: 1 / GRID_CELL_COUNT,
+          height: 1 / GRID_CELL_COUNT,
+          rotation: 0,
+        }
+      });
     }
+  }
 
-    const defaultChessPieces = [
-      {
-        id: "0",
-        imageUrl: ship1_h_img,
-        defaultImg: ship1_h_img,
-        rotateImg: ship1_v_img,
-        direction: 1,   // 水平1 竖直0
-        size: 2,
-        coordinate: [],
-        isDisabled: 0 // 是否被禁用  0 可拖拽 1 不可拖拽
-      },
-      {
-        id: "1",
-        imageUrl: ship2_h_img,
-        defaultImg: ship2_h_img,
-        rotateImg: ship2_v_img,
-        direction: 1,
-        size: 3,
-        coordinate: [],
-        isDisabled: 0
-      },
-      {
-        id: "2",
-        imageUrl: ship2_h_img,
-        defaultImg: ship2_h_img,
-        rotateImg: ship2_v_img,
-        direction: 1,
-        size: 3,
-        coordinate: [],
-        isDisabled: 0
-      },
-      {
-        id: "3",
-        imageUrl: ship3_h_img,
-        defaultImg: ship3_h_img,
-        rotateImg: ship3_v_img,
-        direction: 1,
-        size: 4,
-        coordinate: [],
-        isDisabled: 0
-      },
-      {
-        id: "4",
-        imageUrl: ship4_h_img,
-        defaultImg: ship4_h_img,
-        rotateImg: ship4_v_img,
-        direction: 1,
-        size: 5,
-        coordinate: [],
-        isDisabled: 0
-      },
-    ];
-    store.commit("setChessPieces", defaultChessPieces);
+  const defaultChessPieces = [
+    {
+      id: "0",
+      imageUrl: ship1_h_img,
+      defaultImg: ship1_h_img,
+      rotateImg: ship1_v_img,
+      direction: 1,   // 水平1 竖直0
+      size: 2,
+      coordinate: [],
+      isDisabled: 0 // 是否被禁用  0 可拖拽 1 不可拖拽
+    },
+    {
+      id: "1",
+      imageUrl: ship2_h_img,
+      defaultImg: ship2_h_img,
+      rotateImg: ship2_v_img,
+      direction: 1,
+      size: 3,
+      coordinate: [],
+      isDisabled: 0
+    },
+    {
+      id: "2",
+      imageUrl: ship2_h_img,
+      defaultImg: ship2_h_img,
+      rotateImg: ship2_v_img,
+      direction: 1,
+      size: 3,
+      coordinate: [],
+      isDisabled: 0
+    },
+    {
+      id: "3",
+      imageUrl: ship3_h_img,
+      defaultImg: ship3_h_img,
+      rotateImg: ship3_v_img,
+      direction: 1,
+      size: 4,
+      coordinate: [],
+      isDisabled: 0
+    },
+    {
+      id: "4",
+      imageUrl: ship4_h_img,
+      defaultImg: ship4_h_img,
+      rotateImg: ship4_v_img,
+      direction: 1,
+      size: 5,
+      coordinate: [],
+      isDisabled: 0
+    },
+  ];
+  store.commit("setChessPieces", defaultChessPieces);
 }
 // const chessboard = ref<ChessPieceInstance[][]>([]);
 // const chessPieces = ref<ChessPiece[]>([]);
@@ -1041,14 +1072,46 @@ const NewGameFn = () => {
   store.commit("setIsJoinGameDisabled", true);
   store.commit("setIsNewGameDisabled", true);
 
+
+
+
+  // Reset all data
+  store.commit("setDialog", false);
+  // store.commit("setIsRandomBoardDisabled", false);
+  store.commit("setIsStartGameDisabled", true);
+  store.commit("setGameStage", GameStage.NotInGame);
+  store.commit("unsetGameStarted");
+  store.commit("setGameIndex", -1);
+  store.commit("setGameId", "");
+  store.commit("setGameWinner", "");
+  store.commit("setToJoinGameIndex", -1);
+  store.commit("setOpponentLastShot", { x: -1, y: -1 });
+  store.commit("setLastHitTimestamp", 0);
+  store.commit("setMyLastShot", { x: -1, y: -1 });
+  store.commit("setHit", false);
+  store.commit("setOpponentAddress", "");
+  store.commit("clearCurrentShip");
+  store.commit("setNumShipParts", 0);
+  // store.commit("setMyBoardInShips", []);
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 10; j++) {
+      store.commit("setMyBoard", { value: "", x: i, y: j });
+    }
+  }
+
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 10; j++) {
+      store.commit("setOpponentBoard", { value: "", x: i, y: j });
+    }
+  }
 }
 
 const getShipNumFn = () => {
   const len1 = store.state.chessPieces?.filter((item) => item.isDisabled === 1).length;
   return len1;
 }
-
-
+console.log("--------------------------ppp")
+console.log(store.state.myBoard)
 </script>
 
 <template>
@@ -1118,6 +1181,9 @@ const getShipNumFn = () => {
                   }" draggable="true" @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
                     @click="rotatePiece(cellIndex, rowIndex)">
                   </div>
+
+                  <img v-if="store.state.myBoard[rowIndex][cellIndex] == 'm'" :src="mIcon" />
+                  <img class="x-icon" v-if="store.state.myBoard[rowIndex][cellIndex] == 'X'" :src="xIcon" />
                 </el-tooltip>
               </div>
             </div>
@@ -1150,17 +1216,17 @@ const getShipNumFn = () => {
           <div v-for="(row, x) in store.state.opponentBoard" :key="x" class="flex">
             <div v-for="(cell, y) in row" :key="y" @click="MakeShot(x, y)" :class="{
               'border-x': true,
-               'border-y:': true,
-                'border-solid': true,
-                 'hover:bg-gray-700': true,
-                  'flex': true,
+              'border-y:': true,
+              'border-solid': true,
+              'hover:bg-gray-700': true,
+              'flex': true,
               'items-center': true,
-               'justify-center': true,
-                'text-4xl': true,
+              'justify-center': true,
+              'text-4xl': true,
               'cursor-pointer': true,
-               'text-cyan-500': true,
-                'chessboard_item': true,
-                 chessboard_opponent: true,
+              'text-cyan-500': true,
+              'chessboard_item': true,
+              chessboard_opponent: true,
             }">
               <!-- {{
                 cell === "X"
@@ -1171,9 +1237,10 @@ const getShipNumFn = () => {
                     ? 'close'
                     : ""
               }} -->
-              <span v-if="cell == 'X'">cancel</span>
+              <!-- <span v-if="cell == 'X'">cancel</span> -->
+              <img v-if="cell == 'X'" :src="mXIcon" />
               <span v-else-if="cell == 'O'">circle</span>
-              <img v-else-if="cell == 'm'" :src="mIcon"/>
+              <img v-else-if="cell == 'm'" :src="mIcon" />
               <span v-else> </span>
             </div>
           </div>
@@ -1354,6 +1421,18 @@ const getShipNumFn = () => {
   flex: 1;
 }
 
+.chessboard-cell img{
+  position: relative;
+  z-index: 100;
+}
+.chessboard-cell .x-icon {
+  position: absolute;
+  width: 37px;
+  height: 34px;
+  top: -2px;
+  left: -3.5px;
+  max-width: max-content;
+}
 /* .occupied {
   background-color: lightgray;
 } */
@@ -1443,6 +1522,7 @@ const getShipNumFn = () => {
   background-image: url("../assets/image2.jpg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  z-index: 999;
 }
 
 .result_modal_bg {
@@ -1473,7 +1553,7 @@ const getShipNumFn = () => {
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 99;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   align-items: center;
