@@ -55,6 +55,7 @@ const store = createStore({
     return {
       chessboard: <ChessPieceInstance[][]>([]),
       chessPieces: <ChessPiece[]>([]),
+      isLockShip: '0', // 棋盘有没有被锁定不允许移动   0未锁定   1锁定 字符串格式
       isDockEmpty: false, // 判断船坞有没有船 false 有船   true: 没船    没船就可以开始游戏了
       dialog: false,
       isNewGameDisabled: false,
@@ -136,6 +137,9 @@ const store = createStore({
     setIsDockEmpty (state, value) {
       state.isDockEmpty = value
     },
+    setIsLockShip (state, value) {
+      state.isLockShip = value
+    },
     setIsNewGameDisabled (state, value) {
       state.isNewGameDisabled = value
     },
@@ -211,9 +215,9 @@ const store = createStore({
     // setMyBoardInShips (state, value) {
     //   state.myBoardInShips = value
     // },
-    addToMyBoardInShips (state, value) {
-      state.myBoardInShips.push(value)
-    },
+    // addToMyBoardInShips (state, value) {
+    //   state.myBoardInShips.push(value)
+    // },
     setOpponentBoard (state, {value, x, y}: any) {
       //console.log(`opponentBoard=${state.opponentBoard}`)
       state.opponentBoard[x][y] = value
@@ -228,7 +232,7 @@ const store = createStore({
         console.log(index);
         if (index > -1) {
           console.log("进来了2")
-          const newObj = [ x, y, z]
+          const newObj = [ x.toString(), y.toString(), z.toString()]
           state.myBoardInShips.splice(index, 1, newObj)
         }
       } else {

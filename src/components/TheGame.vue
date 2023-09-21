@@ -270,8 +270,10 @@ const StartGame = async () => {
     store.commit("setMyBoard", { value: "O", x: allDot[i][0], y: allDot[i][1] });
   }
 
-  console.log(store.state.myBoard);
 
+  console.log(store.state.myBoard);
+  store.commit("setIsLockShip", '1');
+  localStorage.setItem("isLockShip", '1');
   localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
   localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
 
@@ -315,6 +317,8 @@ const JoinGame = async () => {
 
   console.log(store.state.myBoard);
 
+  store.commit("setIsLockShip", '1');
+  localStorage.setItem("isLockShip", '1');
   localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
   localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
   await joinGame(store.state.toJoinGameIndex, store.state.myBoardInShips);
@@ -757,8 +761,6 @@ const turn = async (
 };
 
 
-
-
 const SHIP_COUNt_MAX = 5;
 
 
@@ -766,9 +768,10 @@ onMounted(() => {
   if (localStorage.getItem("chessPieces") || localStorage.getItem("chessboard")) {
     const _chessPieces = JSON.parse(localStorage.getItem("chessPieces") || '{}');
     const _chessboard = JSON.parse(localStorage.getItem("chessboard") || '{}');
-
+    const _isLockShip = localStorage.getItem('setIsLockShip') || '0';
     store.commit("resetChessPieces", _chessPieces);
     store.commit("resetChessboard", _chessboard);
+    store.commit("setIsLockShip", _isLockShip);
 
   } else {
     defaultDataFn();
@@ -998,6 +1001,9 @@ const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: 
 
 // 旋转棋子
 const rotatePiece = (cellIndex: number, rowIndex: number) => {
+  if (store.state.isLockShip == '1') {
+    return false;
+  }
   const cell = store.state.chessboard[rowIndex][cellIndex];
   const obj = store.state.chessPieces[Number(cell.pieceId)];
 
@@ -1065,13 +1071,15 @@ const drop = (event: DragEvent, cellIndex: number, rowIndex: number, piece: any,
 const NewGameFn = () => {
   localStorage.removeItem("chessPieces")
   localStorage.removeItem("chessboard")
+  localStorage.removeItem("setIsLockShip")
+
   defaultDataFn();
 
   // store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", true);
   store.commit("setIsNewGameDisabled", true);
-
+   store.commit("setIsLockShip", '0');
 
 
 
@@ -1170,15 +1178,16 @@ console.log(store.state.myBoard)
               <div v-for="(cell, cellIndex) in row" :key="cellIndex" :id="rowIndex + '-' + cellIndex"
                 class="chessboard-cell" :class="{ 'occupied': cell && cell.pieceId !== null }"
                 @drop="drop($event, cellIndex, rowIndex, cell?.piece, '1')" @dragover.prevent>
-                <el-tooltip class="box-item" effect="dark" content="Click to rotate 90 degrees" placement="right">
+                <el-tooltip :disabled="store.state.isLockShip == '1'" class="box-item" effect="dark" content="Click to rotate 90 degrees" placement="right">
                   <div v-if="cell && cell.pieceId !== null" class="chess-piece" :style="{
                     backgroundImage: `url(${cell.piece?.imageUrl})`,
                     position: 'absolute',
                     width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
                     height: `${cell?.piece?.direction === 1 ? 28 : (30 * (cell?.piece?.size || 0) - 2)}px`,
                     transformOrigin: 'bottom',
-                    backgroundSize: '100% 100%'
-                  }" draggable="true" @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
+                    backgroundSize: '100% 100%',
+                    cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
+                  }" :draggable="store.state.isLockShip == '0'" @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
                     @click="rotatePiece(cellIndex, rowIndex)">
                   </div>
 
@@ -1436,9 +1445,9 @@ console.log(store.state.myBoard)
 /* .occupied {
   background-color: lightgray;
 } */
-.occupied .chess-piece {
+/* .occupied .chess-piece {
   cursor: grab;
-}
+} */
 
 .my-dock {
   width: 152px;
