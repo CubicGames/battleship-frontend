@@ -1,17 +1,55 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 
 import { ethosForVue, TransactionBlock } from "ethos-connect-vue";
 import { BATTLESHIP_CONTRACT, STATE_OBJECT_ID } from "../constants";
 import { GenerateBoardConfig } from "../board";
 import { GenBoardProof, GenShotProof } from "../index";
-import Dialog from "./misc-overflowed.vue";
 import defeatImg from "../assets/game/defeat_img.png";
 import defeatLight from "../assets/game/light1.png";
 import winImg from "../assets/game/win_img.png";
 import winLight from "../assets/game/light2.png";
+import textIcon from '../assets/test.png';
+import draggable from 'vuedraggable';
+import ship1_h_img from '../assets/ship1_h.png';
+import ship1_v_img from '../assets/ship1_v.png';
+import ship2_h_img from '../assets/ship2_h.png';
+import ship2_v_img from '../assets/ship2_v.png';
+import ship3_h_img from '../assets/ship3_h.png';
+import ship3_v_img from '../assets/ship3_v.png';
+import ship4_h_img from '../assets/ship4_h.png';
+import ship4_v_img from '../assets/ship4_v.png';
+import { ElMessage } from 'element-plus'
 
+// 新增
+// import { DraggableItem } from "vuedraggable";
+
+const GRID_CELL_COUNT = 10;
+
+// interface ChessPiece {
+//   id: string;
+//   imageUrl: string;
+//   direction: number;
+//   size: number;
+//   // coordinate: Array<Array<string>>;
+//   coordinate: any;
+//   defaultImg?: any;
+//   rotateImg?: any;
+//   isDisabled?: number;
+// }
+
+// interface ChessPieceInstance {
+//   pieceId: string | null;
+//   x: number;
+//   y: number;
+//   width: number;
+//   height: number;
+//   rotation: number;
+//   piece?: ChessPiece;
+// }
+
+// 以上新增
 let showPopup = ref(false);
 const shipLengths = [5, 4, 3, 3, 2];
 const totalParts = [5, 9, 12, 15, 17];
@@ -42,80 +80,80 @@ let gameStage = GameStage.NotInGame;
 
 const player = ref("O");
 
-const PlaceShipPart = (x: number, y: number) => {
-  if (store.state.gameStarted) return;
+// const PlaceShipPart = (x: number, y: number) => {
+//   if (store.state.gameStarted) return;
 
-  //console.log(`store.state.myBoard=${store.state.myBoard}`)
-  if (store.state.myBoard[x][y] !== "") return;
+//   //console.log(`store.state.myBoard=${store.state.myBoard}`)
+//   if (store.state.myBoard[x][y] !== "") return;
 
-  store.commit("setMyBoard", { value: player.value, x, y });
-  store.commit("addToCurrentShip", { x, y });
-  store.commit("setNumShipParts", store.state.numShipParts + 1);
-  if (totalParts.find((element) => element === store.state.numShipParts)) {
-    AddShip();
-  }
-  if (store.state.numShipParts > totalParts[totalParts.length - 1]) {
-    console.log(`Invalid number of ship parts: ${store.state.numShipParts}`);
-    NewGame();
-    return;
-  }
-};
+//   store.commit("setMyBoard", { value: player.value, x, y });
+//   store.commit("addToCurrentShip", { x, y });
+//   store.commit("setNumShipParts", store.state.numShipParts + 1);
+//   if (totalParts.find((element) => element === store.state.numShipParts)) {
+//     AddShip();
+//   }
+//   if (store.state.numShipParts > totalParts[totalParts.length - 1]) {
+//     console.log(`Invalid number of ship parts: ${store.state.numShipParts}`);
+//     NewGame();
+//     return;
+//   }
+// };
 
-const AddShip = () => {
-  let currentShip = store.state.currentShip;
-  if (currentShip.length <= 1) {
-    console.log(`Incomplete ship, ship length: ${currentShip.length}`);
-    NewGame();
-    return;
-  }
-  let aligned = -1;
-  if (currentShip.every((element) => element.x === currentShip[0].x)) {
-    aligned = 1;
-    currentShip.sort((a, b) => {
-      return a.y < b.y ? -1 : a.y > b.y ? 1 : 0;
-    });
-  } else if (currentShip.every((element) => element.y === currentShip[0].y)) {
-    aligned = 0;
-    currentShip.sort((a, b) => {
-      return a.x < b.x ? -1 : a.x > b.x ? 1 : 0;
-    });
-  }
-  if (aligned === -1) {
-    console.log(
-      `Unaligned ship, ship: ${JSON.stringify(currentShip, null, 2)}`
-    );
-    NewGame();
-    return;
-  }
+// const AddShip = () => {
+//   let currentShip = store.state.currentShip;
+//   if (currentShip.length <= 1) {
+//     console.log(`Incomplete ship, ship length: ${currentShip.length}`);
+//     NewGame();
+//     return;
+//   }
+//   let aligned = -1;
+//   if (currentShip.every((element) => element.x === currentShip[0].x)) {
+//     aligned = 1;
+//     currentShip.sort((a, b) => {
+//       return a.y < b.y ? -1 : a.y > b.y ? 1 : 0;
+//     });
+//   } else if (currentShip.every((element) => element.y === currentShip[0].y)) {
+//     aligned = 0;
+//     currentShip.sort((a, b) => {
+//       return a.x < b.x ? -1 : a.x > b.x ? 1 : 0;
+//     });
+//   }
+//   if (aligned === -1) {
+//     console.log(
+//       `Unaligned ship, ship: ${JSON.stringify(currentShip, null, 2)}`
+//     );
+//     NewGame();
+//     return;
+//   }
 
-  if (store.state.myBoardInShips.length >= 5) {
-    console.log(`Attempt to put too many ships`);
-    NewGame();
-    return;
-  }
-  let expectedLen = shipLengths[store.state.myBoardInShips.length];
-  if (currentShip.length !== expectedLen) {
-    console.log(
-      `Incorrect ship length: ${currentShip.length}, expected: ${expectedLen}`
-    );
-    NewGame();
-    return;
-  }
-  store.commit("addToMyBoardInShips", [
-    currentShip[0].x.toString(),
-    currentShip[0].y.toString(),
-    aligned.toString(),
-  ]);
-  store.commit("clearCurrentShip");
-};
+//   if (store.state.myBoardInShips.length >= 5) {
+//     console.log(`Attempt to put too many ships`);
+//     NewGame();
+//     return;
+//   }
+//   let expectedLen = shipLengths[store.state.myBoardInShips.length];
+//   if (currentShip.length !== expectedLen) {
+//     console.log(
+//       `Incorrect ship length: ${currentShip.length}, expected: ${expectedLen}`
+//     );
+//     NewGame();
+//     return;
+//   }
+//   store.commit("addToMyBoardInShips", [
+//     currentShip[0].x.toString(),
+//     currentShip[0].y.toString(),
+//     aligned.toString(),
+//   ]);
+//   store.commit("clearCurrentShip");
+// };
 
-const ResetShip = () => {
-  for (let i = 0; i < store.state.currentShip.length; i++) {
-    let { x, y } = store.state.currentShip[i];
-    store.commit("setMyBoard", { value: "", x, y });
-  }
-  store.commit("clearCurrentShip");
-};
+// const ResetShip = () => {
+//   for (let i = 0; i < store.state.currentShip.length; i++) {
+//     let { x, y } = store.state.currentShip[i];
+//     store.commit("setMyBoard", { value: "", x, y });
+//   }
+//   store.commit("clearCurrentShip");
+// };
 
 const MakeShot = async (x: number, y: number) => {
   if (!store.state.gameStarted) return;
@@ -186,7 +224,8 @@ const ListGames = async () => {
   store.commit("setOpponentAddress", opponentAddress);
   store.commit("setToJoinGameIndex", gameIndex);
 
-  store.commit("setIsRandomBoardDisabled", true);
+  // store.commit("setIsRandomBoardDisabled", true);
+  store.commit("setIsNewGameDisabled", true);
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", false);
@@ -217,11 +256,15 @@ const StartGame = async () => {
     return;
   }
 
+  localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
+  localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
+
   await createGame(store.state.myBoardInShips);
 
   store.commit("setGameStarted");
   store.commit("setGameStage", GameStage.WaitJoin);
-  store.commit("setIsRandomBoardDisabled", true);
+  // store.commit("setIsRandomBoardDisabled", true);
+  store.commit("setIsNewGameDisabled", true);
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", true);
@@ -243,68 +286,71 @@ const JoinGame = async () => {
     console.log(`Not enough ships: ${store.state.myBoardInShips.length}`);
     return;
   }
-
+  localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
+  localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
   await joinGame(store.state.toJoinGameIndex, store.state.myBoardInShips);
 
   store.commit("setGameStage", GameStage.WaitMove);
   store.commit("setGameStarted");
-  store.commit("setIsRandomBoardDisabled", true);
+  // store.commit("setIsRandomBoardDisabled", true);
+  store.commit("setIsNewGameDisabled", true);
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", true);
 };
 
-const NewGame = () => {
-  console.log("New game");
+// const NewGame = () => {
+//   console.log("New game");
 
-  // Reset all data
-  store.commit("setDialog", false);
-  store.commit("setIsRandomBoardDisabled", false);
-  store.commit("setIsStartGameDisabled", true);
-  store.commit("setIsListGamesDisabled", true);
-  store.commit("setIsJoinGameDisabled", true);
-  store.commit("setGameStage", GameStage.NotInGame);
-  store.commit("unsetGameStarted");
-  store.commit("setGameIndex", -1);
-  store.commit("setGameId", "");
-  store.commit("setGameWinner", "");
-  store.commit("setToJoinGameIndex", -1);
-  store.commit("setOpponentLastShot", { x: -1, y: -1 });
-  store.commit("setLastHitTimestamp", 0);
-  store.commit("setMyLastShot", { x: -1, y: -1 });
-  store.commit("setHit", false);
-  store.commit("setOpponentAddress", "");
-  store.commit("clearCurrentShip");
-  store.commit("setNumShipParts", 0);
-  store.commit("setMyBoardInShips", []);
-  for (let i = 0; i < 10; i++) {
-    for (let j = 0; j < 10; j++) {
-      store.commit("setMyBoard", { value: "", x: i, y: j });
-    }
-  }
+//   // Reset all data
+//   store.commit("setDialog", false);
+//   // store.commit("setIsRandomBoardDisabled", false);
+//   store.commit("setIsNewGameDisabled", true);
+//   store.commit("setIsStartGameDisabled", true);
+//   store.commit("setIsListGamesDisabled", true);
+//   store.commit("setIsJoinGameDisabled", true);
+//   store.commit("setGameStage", GameStage.NotInGame);
+//   store.commit("unsetGameStarted");
+//   store.commit("setGameIndex", -1);
+//   store.commit("setGameId", "");
+//   store.commit("setGameWinner", "");
+//   store.commit("setToJoinGameIndex", -1);
+//   store.commit("setOpponentLastShot", { x: -1, y: -1 });
+//   store.commit("setLastHitTimestamp", 0);
+//   store.commit("setMyLastShot", { x: -1, y: -1 });
+//   store.commit("setHit", false);
+//   store.commit("setOpponentAddress", "");
+//   store.commit("clearCurrentShip");
+//   store.commit("setNumShipParts", 0);
+//   store.commit("setMyBoardInShips", []);
+//   for (let i = 0; i < 10; i++) {
+//     for (let j = 0; j < 10; j++) {
+//       store.commit("setMyBoard", { value: "", x: i, y: j });
+//     }
+//   }
 
-  for (let i = 0; i < 10; i++) {
-    for (let j = 0; j < 10; j++) {
-      store.commit("setOpponentBoard", { value: "", x: i, y: j });
-    }
-  }
-};
+//   for (let i = 0; i < 10; i++) {
+//     for (let j = 0; j < 10; j++) {
+//       store.commit("setOpponentBoard", { value: "", x: i, y: j });
+//     }
+//   }
+// };
 
-const GenRandomBoard = () => {
-  let { board, boardInShips } = GenerateBoardConfig();
-  console.log(`board=${JSON.stringify(board, null, 2)}`);
-  console.log(`boardInShips=${JSON.stringify(boardInShips, null, 2)}`);
+// const GenRandomBoard = () => {
+//   let { board, boardInShips } = GenerateBoardConfig();
+//   console.log(`board=${JSON.stringify(board, null, 2)}`);
+//   console.log(`boardInShips=${JSON.stringify(boardInShips, null, 2)}`);
 
-  for (let i = 0; i < 10; i++) {
-    for (let j = 0; j < 10; j++) {
-      store.commit("setMyBoard", { value: board[i][j], x: i, y: j });
-    }
-  }
-  store.commit("setMyBoardInShips", boardInShips);
-  store.commit("setIsStartGameDisabled", false);
-  store.commit("setIsListGamesDisabled", false);
-  store.commit("setIsJoinGameDisabled", true);
-};
+//   for (let i = 0; i < 10; i++) {
+//     for (let j = 0; j < 10; j++) {
+//       store.commit("setMyBoard", { value: board[i][j], x: i, y: j });
+//     }
+//   }
+//   store.commit("setMyBoardInShips", boardInShips);
+//   store.commit("setIsStartGameDisabled", false);
+//   store.commit("setIsListGamesDisabled", false);
+//   store.commit("setIsJoinGameDisabled", true);
+// };
 
 const createGame = async (boardInShips: string[][]) => {
   console.log("createGame start");
@@ -337,6 +383,7 @@ const createGame = async (boardInShips: string[][]) => {
   store.commit("setGameIndex", gameIndex);
 };
 
+// 击中的坐标
 const getShotEventLoop = () => {
   setInterval(function () {
     console.log("queryEvents: ShotEvent");
@@ -522,6 +569,8 @@ const getWonEventLoop = () => {
           return;
         }
 
+
+
         store.commit("setGameWinner", winner);
         store.commit("setGameStage", GameStage.GameOver);
         store.commit("setDialog", true);
@@ -676,72 +725,367 @@ const turn = async (
   console.log(`yConfirmed=${yConfirmed}`)
 */
 };
+
+
+
+
+const SHIP_COUNt_MAX = 5;
+
+
+onMounted(() => {
+  if (localStorage.getItem("chessPieces") || localStorage.getItem("chessboard")) {
+    const _chessPieces = JSON.parse(localStorage.getItem("chessPieces") || '{}');
+    const _chessboard = JSON.parse(localStorage.getItem("chessboard") || '{}');
+
+    store.commit("resetChessPieces", _chessPieces);
+    store.commit("resetChessboard", _chessboard);
+
+  } else {
+    defaultDataFn();
+  }
+})
+
+const defaultDataFn = () => {
+   for (let i = 0; i < GRID_CELL_COUNT; i++) {
+      store.commit("addChessboard", { x: i, val: [] });
+      // chessboard.value[i] = [];
+      for (let j = 0; j < GRID_CELL_COUNT; j++) {
+        store.commit("setChessboard", {
+          x: i, y: j, val: {
+            pieceId: null,
+            x: j / GRID_CELL_COUNT,
+            y: i / GRID_CELL_COUNT,
+            width: 1 / GRID_CELL_COUNT,
+            height: 1 / GRID_CELL_COUNT,
+            rotation: 0,
+          }
+        });
+      }
+    }
+
+    const defaultChessPieces = [
+      {
+        id: "0",
+        imageUrl: ship1_h_img,
+        defaultImg: ship1_h_img,
+        rotateImg: ship1_v_img,
+        direction: 1,   // 水平1 竖直0
+        size: 2,
+        coordinate: [],
+        isDisabled: 0 // 是否被禁用  0 可拖拽 1 不可拖拽
+      },
+      {
+        id: "1",
+        imageUrl: ship2_h_img,
+        defaultImg: ship2_h_img,
+        rotateImg: ship2_v_img,
+        direction: 1,
+        size: 3,
+        coordinate: [],
+        isDisabled: 0
+      },
+      {
+        id: "2",
+        imageUrl: ship2_h_img,
+        defaultImg: ship2_h_img,
+        rotateImg: ship2_v_img,
+        direction: 1,
+        size: 3,
+        coordinate: [],
+        isDisabled: 0
+      },
+      {
+        id: "3",
+        imageUrl: ship3_h_img,
+        defaultImg: ship3_h_img,
+        rotateImg: ship3_v_img,
+        direction: 1,
+        size: 4,
+        coordinate: [],
+        isDisabled: 0
+      },
+      {
+        id: "4",
+        imageUrl: ship4_h_img,
+        defaultImg: ship4_h_img,
+        rotateImg: ship4_v_img,
+        direction: 1,
+        size: 5,
+        coordinate: [],
+        isDisabled: 0
+      },
+    ];
+    store.commit("setChessPieces", defaultChessPieces);
+}
+// const chessboard = ref<ChessPieceInstance[][]>([]);
+// const chessPieces = ref<ChessPiece[]>([]);
+// 初始化棋盘数组和棋子数组
+
+// 根据棋子实例的pieceId获取对应的棋子对象
+// const getChessPieceById = (pieceId: string | null) => {
+//   return pieceId ? store.state.chessPieces.value.find((piece) => piece.id === pieceId) : null;
+// };
+
+// 更新棋盘记录
+const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: number, pieceId: string | null, oldCoordinates?: any[] | null, type?: number) => {
+  // event: 事件对象  cellIndex: 列  rowIndex: 行   pieceId：获取图形id  oldCoordinates 更换位置旧位置的坐标  type：图形变换类型： 0旋转 1拖砖
+  const cell = store.state.chessboard[rowIndex][cellIndex];
+  const ImgObj = store.state.chessPieces[Number(pieceId)];
+
+  console.log("------------------------------------uuuuu");
+  // console.log(cell)
+  console.log(ImgObj)
+  let allDot = [];
+  for (let i = 0; i < store.state.chessPieces.length; i++) {
+    console.log("-----------------------------------bbbbbb")
+    if (i != Number(pieceId)) {
+      allDot.push(...store.state.chessPieces[i].coordinate);
+    }
+  }
+  console.log("---------------------------------打印所有的点")
+  console.log(allDot)
+  console.log(store.state.chessPieces)
+  const dragType = event?.dataTransfer?.getData("type");
+  let arr = [];
+  if (ImgObj?.direction === 1) {
+    for (let i = 0; i < ImgObj?.size; i++) {
+      if (cellIndex + i > 9) {
+        ElMessage.error('Obstacle detected. Please adjust the position.')
+        if (dragType === '1') {
+          ImgObj.isDisabled = 0;
+        }
+        event?.preventDefault;
+        if (type === 0) {
+          ImgObj.direction = 0;
+        }
+        // arr = ImgObj.coordinate;
+        return false;
+      } else {
+        if (allDot?.findIndex((item) => item[0] == rowIndex && item[1] == cellIndex + i) > -1) {
+          ElMessage.error('Obstacle detected. Please adjust the position.')
+          if (dragType === '1') {
+            ImgObj.isDisabled = 0;
+          }
+          event?.preventDefault;
+          // 如果旋转改变方向之后，判断点有重叠，方向需要复原
+          if (type === 0) {
+            ImgObj.direction = 0;
+          }
+          // arr = ImgObj.coordinate;
+          return false;
+        } else {
+          arr.push([`${rowIndex}`, `${cellIndex + i}`]);
+        }
+      }
+    }
+  } else {
+    for (let i = 0; i < ImgObj?.size; i++) {
+      if (rowIndex + i > 9) {
+        ElMessage.error('Obstacle detected. Please adjust the position.')
+
+        if (dragType === '1') {
+          ImgObj.isDisabled = 0;
+        }
+        event?.preventDefault;
+        if (type === 0) {
+          ImgObj.direction = 1;
+        }
+        // arr = ImgObj.coordinate;
+        return false;
+      } else {
+        if (allDot?.findIndex((item) => item[0] == rowIndex + i && item[1] == cellIndex) > -1) {
+          ElMessage.error('Obstacle detected. Please adjust the position.')
+          if (dragType === '1') {
+            ImgObj.isDisabled = 0;
+          }
+          event?.preventDefault;
+          // 如果旋转改变方向之后，判断点有重叠，方向需要复原
+          if (type === 0) {
+            ImgObj.direction = 1;
+          }
+          // arr = ImgObj.coordinate;
+          return false;
+        } else {
+          arr.push([`${rowIndex + i}`, `${cellIndex}`]);
+        }
+
+      }
+    }
+  }
+
+  console.log("打印arr")
+  console.log(arr)
+  ImgObj.coordinate = arr;
+  ImgObj.isDisabled = 1;
+  if (type === 0) {
+    ImgObj.imageUrl = ImgObj.imageUrl == ImgObj.rotateImg ? ImgObj.defaultImg : ImgObj.rotateImg;
+    // ImgObj.direction = ImgObj.direction == 0 ? 1 : 0;
+    // cell.piece = ImgObj;
+  }
+
+  if (ImgObj && cell) {
+    console.log("-----------------------99")
+    cell.pieceId = pieceId;
+    cell.piece = ImgObj;
+    store.commit("changeChessboard", { x: rowIndex, y: cellIndex, val: { "pieceId": pieceId, "piece": ImgObj } });
+  } else {
+    console.log("-----------------------1010")
+    cell.pieceId = null;
+    cell.piece = undefined;
+    store.commit("changeChessboard", { x: rowIndex, y: cellIndex, val: { "pieceId": null, "piece": undefined } });
+  }
+
+  console.log(oldCoordinates)
+  console.log(type)
+  if (oldCoordinates && type) {
+    console.log("--------------------------------------111")
+    const rowId = oldCoordinates?.[0];
+    const colId = oldCoordinates?.[1];
+    if (rowId != rowIndex || colId != cellIndex) {
+      console.log("--------------------------------------222")
+      const oldCell = store.state.chessboard[rowId][colId];
+      oldCell.pieceId = null;
+      oldCell.piece = undefined;
+      store.commit("changeChessboard", { x: rowId, y: colId, val: { "pieceId": null, "piece": undefined } });
+    }
+  }
+  if (getShipNumFn() >= 5) {
+    store.commit("setIsStartGameDisabled", false);
+    store.commit("setIsListGamesDisabled", false);
+    store.commit("setIsJoinGameDisabled", false);
+  } else {
+    store.commit("setIsStartGameDisabled", true);
+    store.commit("setIsListGamesDisabled", true);
+    store.commit("setIsJoinGameDisabled", true);
+  }
+
+
+  store.commit("addChessPieces", { x: Number(pieceId), val: ImgObj });
+  store.commit("setMyBoardInShips", { x: rowIndex, y: cellIndex, z: ImgObj?.direction, oldCoordinates });
+  console.log("棋子坐标");
+  console.log(store.state.myBoardInShips);
+};
+
+// 旋转棋子
+const rotatePiece = (cellIndex: number, rowIndex: number) => {
+  const cell = store.state.chessboard[rowIndex][cellIndex];
+  const obj = store.state.chessPieces[Number(cell.pieceId)];
+
+  if (cell.piece && cell.pieceId !== null) {
+    obj.direction = obj.direction == 0 ? 1 : 0;
+    // obj.imageUrl = obj.imageUrl == obj.rotateImg ? obj.defaultImg : obj.rotateImg;
+    // obj.direction = obj.direction == 0 ? 1 : 0;
+    // cell.piece = obj;
+
+    updateChessboard(null, cellIndex, rowIndex, cell.pieceId, [rowIndex, cellIndex, obj.direction], 0); // 重新记录坐标
+  }
+};
+
+const dragStart = (event: DragEvent, pieceId: string, type: string, imgUrl: any, isDisabled?: number) => {
+  // type 用来区分  拖拽行为是棋盘外到棋盘1    棋盘内拖拽2
+  if (isDisabled === 1) {
+    event.preventDefault;
+    return false;
+  } else {
+    event.dataTransfer?.setData("text/plain", pieceId);
+    event.dataTransfer?.setData("type", type);
+    event.dataTransfer?.setDragImage(event.target, 0, 0);
+    // event.dataTransfer?.setDragImage(document.createElement("div"), 0, 0);
+
+    if (type === '1') {
+      const ImgObj = store.state.chessPieces[Number(pieceId)];
+      ImgObj.isDisabled = 2;
+    }
+  }
+};
+
+const drop = (event: DragEvent, cellIndex: number, rowIndex: number, piece: any, dropType: string) => {
+  event.stopPropagation()
+  console.log("执行了")
+  const pieceId = event?.dataTransfer?.getData("text/plain");
+  const type = event?.dataTransfer?.getData("type");
+  if (dropType === '2' && type === '1') {
+    console.log("执行了2222222")
+    const ImgObj = store.state.chessPieces[Number(pieceId)];
+    ImgObj.isDisabled = 0;
+  } else {
+    console.log("执行了11111111")
+
+    if (pieceId) {
+      const obj = store.state.chessPieces?.[Number(pieceId)];
+      let old = null;
+      console.log("--------------------------------------555")
+      console.log(type)
+      if (type === '2') {
+        old = obj?.coordinate?.[0];
+        old.push(obj?.direction);
+        console.log(old)
+      }
+
+      // 更新棋盘记录
+      updateChessboard(event, cellIndex, rowIndex, pieceId, old, 1);
+
+    }
+  }
+
+
+
+};
+
+const NewGameFn = () => {
+  localStorage.removeItem("chessPieces")
+  localStorage.removeItem("chessboard")
+  defaultDataFn();
+
+  // store.commit("setIsStartGameDisabled", true);
+  store.commit("setIsListGamesDisabled", true);
+  store.commit("setIsJoinGameDisabled", true);
+  store.commit("setIsNewGameDisabled", true);
+
+}
+
+const getShipNumFn = () => {
+  const len1 = store.state.chessPieces?.filter((item) => item.isDisabled === 1).length;
+  return len1;
+}
+
+
 </script>
 
 <template>
   <div v-if="store.state.dialog" class="game_result_modal">
-    <div
-      :class="[
-        'result_modal_bg',
-        store.state.gameWinner !== '' &&
+    <div :class="[
+      'result_modal_bg',
+      store.state.gameWinner !== '' &&
         store.state.gameWinner === store.state.opponentAddress
-          ? 'result_modal_bg_defeat'
-          : 'result_modal_bg_win',
-      ]"
-    ></div>
+        ? 'result_modal_bg_defeat'
+        : 'result_modal_bg_win',
+    ]"></div>
     <div class="result_modal_container">
       <div class="result_modal_img">
-        <img
-          v-if="
-            store.state.gameWinner !== '' &&
-            store.state.gameWinner === store.state.opponentAddress
-          "
-          :src="defeatImg"
-          alt=""
-        />
-        <img
-          v-if="
-            store.state.gameWinner !== '' &&
-            store.state.gameWinner !== store.state.opponentAddress
-          "
-          :src="winImg"
-          alt=""
-        />
+        <img v-if="store.state.gameWinner !== '' &&
+          store.state.gameWinner === store.state.opponentAddress
+          " :src="defeatImg" alt="" />
+        <img v-if="store.state.gameWinner !== '' &&
+          store.state.gameWinner !== store.state.opponentAddress
+          " :src="winImg" alt="" />
       </div>
       <div class="result_close" @click="store.state.dialog = false">Close</div>
     </div>
   </div>
-  <!-- <Dialog class="regulation_box"></Dialog> -->
-  <!-- <v-dialog
-      v-model="store.state.dialog"
-      width="100%"
-      height="100%"
-    > -->
-  <!-- <div class="game_result_modal">dddd</div> -->
-  <!-- <v-card>
-        <v-card-text>
-          {{ store.state.gameWinner === '' ?
-'' :  store.state.gameWinner === store.state.opponentAddress ? 'You lose':
-'You win'}}
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" block @click="store.state.dialog = false">Ok</v-btn>
-        </v-card-actions>
-      </v-card> -->
-  <!-- </v-dialog> -->
-  <main class="pt-2 text-center page_container">
+
+  <main class="pt-2 text-center page_container" @drop="drop($event, null, null, null, '2')" @dragover.prevent>
     <div class="text-3xl font-mono font-bold italic text-blue-400 game_info">
       <div class="game_number">
         <span class="name">Duo Code</span>
         <span class="val">
           {{
             store.state.gameIndex != -1
-              ? store.state.gameIndex
-              : store.state.toJoinGameIndex != -1
+            ? store.state.gameIndex
+            : store.state.toJoinGameIndex != -1
               ? store.state.toJoinGameIndex
               : "--"
-          }}</span
-        >
+          }}</span>
       </div>
       <div class="game_logo"></div>
       <div class="game_status">
@@ -749,81 +1093,73 @@ const turn = async (
         <span class="val">{{ gameDescription[store.state.gameStage] }}</span>
       </div>
     </div>
-    <!-- <div class="row">
-      <h3 class="text-xl mb-4 text-cyan-500">
-        {{
-          store.state.gameWinner === ""
-            ? ""
-            : store.state.gameWinner === store.state.opponentAddress
-            ? "You lose"
-            : "You win"
-        }}
-      </h3>
-      <h3 class="text-xl mb-4 text-cyan-500">
-        game number:
-        {{
-          store.state.gameIndex != -1
-            ? store.state.gameIndex
-            : store.state.toJoinGameIndex != -1
-            ? store.state.toJoinGameIndex
-            : ""
-        }}
-      </h3>
-      <h3 class="text-xl mb-4 text-cyan-500">
-        Status: {{ gameDescription[store.state.gameStage] }}
-      </h3>
-    </div> -->
 
+    <!-- 新增 -->
     <div class="game_content">
-      <div class="game_item game_item_me">
+      <div :class="{
+        'game_item': true,
+        'game_item_me': true,
+        'game_item_big': getShipNumFn() < SHIP_COUNt_MAX
+      }">
         <h3 class="text-xl text-rose-500 title title_me">Me</h3>
-        <div class="flex flex-col items-center game_chessboard">
-          <div v-for="(row, x) in store.state.myBoard" :key="x" class="flex">
-            <div
-              v-for="(cell, y) in row"
-              :key="y"
-              :class="`border-x border-y border-blue-400 border-solid hover:bg-gray-700 flex
-            items-center justify-center material-icons-outlined text-4xl
-            cursor-pointer text-cyan-500 chessboard_item chessboard_me`"
-            >
-              {{
-                cell === "X"
-                  ? "cancel"
-                  : cell == "O"
-                  ? "circle"
-                  : cell == "m"
-                  ? "close"
-                  : ""
-              }}
+        <div class="chessboard-container" @drop="drop($event, null, null, null, '2')" @dragover.prevent>
+          <div class="chessboard">
+            <div v-for="(row, rowIndex) in store.state.chessboard" :key="rowIndex" class="chessboard-row">
+              <div v-for="(cell, cellIndex) in row" :key="cellIndex" :id="rowIndex + '-' + cellIndex"
+                class="chessboard-cell" :class="{ 'occupied': cell && cell.pieceId !== null }"
+                @drop="drop($event, cellIndex, rowIndex, cell?.piece, '1')" @dragover.prevent>
+                <el-tooltip class="box-item" effect="dark" content="Click to rotate 90 degrees" placement="right">
+                  <div v-if="cell && cell.pieceId !== null" class="chess-piece" :style="{
+                    backgroundImage: `url(${cell.piece?.imageUrl})`,
+                    position: 'absolute',
+                    width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
+                    height: `${cell?.piece?.direction === 1 ? 28 : (30 * (cell?.piece?.size || 0) - 2)}px`,
+                    transformOrigin: 'bottom',
+                    backgroundSize: '100% 100%'
+                  }" draggable="true" @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
+                    @click="rotatePiece(cellIndex, rowIndex)">
+                  </div>
+                </el-tooltip>
+              </div>
+            </div>
+          </div>
+          <div v-if="getShipNumFn() < SHIP_COUNt_MAX" class="my-dock">
+            <div class="dock-info">
+              <div class="dock-title">My dock</div>
+              <div class="dock-score">{{ getShipNumFn() }}/{{ SHIP_COUNt_MAX }}</div>
+            </div>
+            <div class="chess-pieces">
+              <div v-for="piece in store.state.chessPieces" :key="piece.id" class="pieces-box">
+                <div v-if="piece.isDisabled !== 1" class="chess-piece" :style="{
+                  backgroundImage: `url(${piece.defaultImg})`,
+                  width: `${30 * piece?.size}px`,
+                  height: '30px',
+                  cursor: piece?.isDisabled !== 1 && store.state.isNewGameDisabled ? 'grab' : 'no-drop',
+                  opacity: piece?.isDisabled === 2 ? '0.3' : '1'
+                }" :draggable='piece?.isDisabled === 0 && store.state.isNewGameDisabled'
+                  @dragstart="dragStart($event, piece.id, '1', piece.defaultImg, piece?.isDisabled)"></div>
+              </div>
             </div>
           </div>
         </div>
+
       </div>
-      <!-- <div class="game_pk"></div> -->
+
       <div class="game_item game_item_opponent">
         <h3 class="text-xl text-rose-500 title title_opponent">Opponent</h3>
         <div class="flex flex-col items-center game_chessboard">
-          <div
-            v-for="(row, x) in store.state.opponentBoard"
-            :key="x"
-            class="flex"
-          >
-            <div
-              v-for="(cell, y) in row"
-              :key="y"
-              @click="MakeShot(x, y)"
-              :class="`border-x border-y border-blue-400 border-solid hover:bg-gray-700 flex
+          <div v-for="(row, x) in store.state.opponentBoard" :key="x" class="flex">
+            <div v-for="(cell, y) in row" :key="y" @click="MakeShot(x, y)" :class="`border-x border-y border-solid hover:bg-gray-700 flex
             items-center justify-center material-icons-outlined text-4xl
-            cursor-pointer text-cyan-500 chessboard_item chessboard_opponent`"
-            >
+            cursor-pointer text-cyan-500 chessboard_item chessboard_opponent`">
               {{
                 cell === "X"
-                  ? "cancel"
-                  : cell == "O"
+                ? "cancel"
+                : cell == "O"
                   ? "circle"
                   : cell == "m"
-                  ? "close"
-                  : ""
+                    ? "close"
+                    : ""
               }}
             </div>
           </div>
@@ -831,112 +1167,259 @@ const turn = async (
       </div>
     </div>
 
+
+
+
+
+
+    <!-- <div class="game_content">
+      <div class="game_item game_item_me">
+        <h3 class="text-xl text-rose-500 title title_me">Me</h3>
+        <div class="flex flex-col items-center game_chessboard" @drop="drop" @dragover.prevent>
+          <div v-for="(row, x) in store.state.myBoard" :key="x" class="flex">
+            <div v-for="(cell, y) in row" :key="y" :class="`border-x border-y border-blue-400 border-solid hover:bg-gray-700 flex
+            items-center justify-center material-icons-outlined text-4xl
+            cursor-pointer text-cyan-500 chessboard_item chessboard_me`">
+              {{
+                cell === "X"
+                ? "cancel"
+                : cell == "O"
+                  ? "circle"
+                  : cell == "m"
+                    ? "close"
+                    : ""
+              }}
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chess-piece" >
+        <img id="img1" :src="textIcon" draggable="true" @dragstart="dragStart" @dragend="dragEnd" style="width: 150px; height: 30px;" />
+      </div>
+
+      <div class="game_item game_item_opponent">
+        <h3 class="text-xl text-rose-500 title title_opponent">Opponent</h3>
+        <div class="flex flex-col items-center game_chessboard">
+          <div v-for="(row, x) in store.state.opponentBoard" :key="x" class="flex">
+            <div v-for="(cell, y) in row" :key="y" @click="MakeShot(x, y)" :class="`border-x border-y border-blue-400 border-solid hover:bg-gray-700 flex
+            items-center justify-center material-icons-outlined text-4xl
+            cursor-pointer text-cyan-500 chessboard_item chessboard_opponent`">
+              {{
+                cell === "X"
+                ? "cancel"
+                : cell == "O"
+                  ? "circle"
+                  : cell == "m"
+                    ? "close"
+                    : ""
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
     <div class="btn_list">
-      <button
-        @click="NewGame"
-        class="px-5 py-2 uppercase font-bold hover:bg-[#67ADFF] duration-300 btn-item btn-item-default"
-      >
-        NEW GAME
+      <button @click="NewGameFn" :disabled="store.state.isNewGameDisabled" :class="{
+        'px-5': true,
+        'py-2': true,
+        uppercase: true,
+        'font-bold': true,
+        'duration-300': true,
+        'hover:bg-[#67ADFF]': store.state.isNewGameDisabled
+          ? false
+          : true,
+        'btn-item': true,
+        'btn-item-default': store.state.isNewGameDisabled ? false : true,
+        'btn-item-disabled': store.state.isNewGameDisabled ? true : false,
+      }">
+        <span :class="{
+          'opacity-30': store.state.isNewGameDisabled ? true : false,
+        }">NEW GAME</span>
       </button>
 
-      <button
-        @click="GenRandomBoard"
-        :disabled="store.state.isRandomBoardDisabled"
-        :class="{
-          'px-5': true,
-          'py-2': true,
-          uppercase: true,
-          'font-bold': true,
-          'duration-300': true,
-          'hover:bg-[#67ADFF]': store.state.isRandomBoardDisabled
-            ? false
-            : true,
-          'btn-item': true,
-          'btn-item-default': store.state.isRandomBoardDisabled ? false : true,
-          'btn-item-disabled': store.state.isRandomBoardDisabled ? true : false,
-        }"
-      >
-        <span
-          :class="{
-            'opacity-30': store.state.isRandomBoardDisabled ? true : false,
-          }"
-          >RANDOM BOARD</span
-        >
+      <!-- <button @click="GenRandomBoard" :disabled="store.state.isRandomBoardDisabled" :class="{
+        'px-5': true,
+        'py-2': true,
+        uppercase: true,
+        'font-bold': true,
+        'duration-300': true,
+        'hover:bg-[#67ADFF]': store.state.isRandomBoardDisabled
+          ? false
+          : true,
+        'btn-item': true,
+        'btn-item-default': store.state.isRandomBoardDisabled ? false : true,
+        'btn-item-disabled': store.state.isRandomBoardDisabled ? true : false,
+      }">
+        <span :class="{
+          'opacity-30': store.state.isRandomBoardDisabled ? true : false,
+        }">RANDOM BOARD</span>
+      </button> -->
+
+      <button @click="StartGame" :disabled="store.state.isStartGameDisabled" :class="{
+        'px-5': true,
+        'py-2': true,
+        uppercase: true,
+        'font-bold': true,
+        'duration-300': true,
+        'btn-item-default': store.state.isStartGameDisabled ? false : true,
+        'btn-item-disabled': store.state.isStartGameDisabled ? true : false,
+        'hover:bg-[#67ADFF]': store.state.isStartGameDisabled ? false : true,
+        'btn-item': true,
+      }">
+        <span :class="{
+          'opacity-30': store.state.isStartGameDisabled ? true : false,
+        }">START GAME</span>
       </button>
 
-      <button
-        @click="StartGame"
-        :disabled="store.state.isStartGameDisabled"
-        :class="{
-          'px-5': true,
-          'py-2': true,
-          uppercase: true,
-          'font-bold': true,
-          'duration-300': true,
-          'btn-item-default': store.state.isStartGameDisabled ? false : true,
-          'btn-item-disabled': store.state.isStartGameDisabled ? true : false,
-          'hover:bg-[#67ADFF]': store.state.isStartGameDisabled ? false : true,
-          'btn-item': true,
-        }"
-      >
-        <span
-          :class="{
-            'opacity-30': store.state.isStartGameDisabled ? true : false,
-          }"
-          >START GAME</span
-        >
+      <button @click="ListGames" :disabled="store.state.isListGamesDisabled" :class="{
+        'px-5': true,
+        'py-2': true,
+        uppercase: true,
+        'font-bold': true,
+        'duration-300': true,
+        'btn-item-default': store.state.isListGamesDisabled ? false : true,
+        'btn-item-disabled': store.state.isListGamesDisabled ? true : false,
+        'hover:bg-[#67ADFF]': store.state.isListGamesDisabled ? false : true,
+        'btn-item': true,
+      }">
+        <span :class="{
+          'opacity-30': store.state.isListGamesDisabled ? true : false,
+        }">LIST GAMES</span>
       </button>
 
-      <button
-        @click="ListGames"
-        :disabled="store.state.isListGamesDisabled"
-        :class="{
-          'px-5': true,
-          'py-2': true,
-          uppercase: true,
-          'font-bold': true,
-          'duration-300': true,
-          'btn-item-default': store.state.isListGamesDisabled ? false : true,
-          'btn-item-disabled': store.state.isListGamesDisabled ? true : false,
-          'hover:bg-[#67ADFF]': store.state.isListGamesDisabled ? false : true,
-          'btn-item': true,
-        }"
-      >
-        <span
-          :class="{
-            'opacity-30': store.state.isListGamesDisabled ? true : false,
-          }"
-          >LIST GAMES</span
-        >
-      </button>
-
-      <button
-        @click="JoinGame"
-        :disabled="store.state.isJoinGameDisabled"
-        :class="{
-          'px-5': true,
-          'py-2': true,
-          uppercase: true,
-          'font-bold': true,
-          'duration-300': true,
-          'btn-item-default': store.state.isJoinGameDisabled ? false : true,
-          'btn-item-disabled': store.state.isJoinGameDisabled ? true : false,
-          'hover:bg-[#67ADFF]': store.state.isJoinGameDisabled ? false : true,
-          'btn-item': true,
-        }"
-      >
-        <span
-          :class="{
-            'opacity-30': store.state.isJoinGameDisabled ? true : false,
-          }"
-          >JOIN GAME</span
-        >
+      <button @click="JoinGame" :disabled="store.state.isJoinGameDisabled" :class="{
+        'px-5': true,
+        'py-2': true,
+        uppercase: true,
+        'font-bold': true,
+        'duration-300': true,
+        'btn-item-default': store.state.isJoinGameDisabled ? false : true,
+        'btn-item-disabled': store.state.isJoinGameDisabled ? true : false,
+        'hover:bg-[#67ADFF]': store.state.isJoinGameDisabled ? false : true,
+        'btn-item': true,
+      }">
+        <span :class="{
+          'opacity-30': store.state.isJoinGameDisabled ? true : false,
+        }">JOIN GAME</span>
       </button>
     </div>
   </main>
 </template>
 
 <style scoped>
+.chessboard-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 365px;
+}
+
+.chessboard {
+  width: 300px;
+  height: 300px;
+  border: 1px solid #000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* margin: 24px auto; */
+}
+
+.chessboard-row {
+  display: flex;
+  flex: 1;
+}
+
+.chessboard-cell {
+  width: calc(100% / 10);
+  height: 100%;
+  border: 1px solid #97C0FF;
+  position: relative;
+  flex: 1;
+}
+
+/* .occupied {
+  background-color: lightgray;
+} */
+.occupied .chess-piece {
+  cursor: grab;
+}
+
+.my-dock {
+  width: 152px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 18px;
+}
+
+.my-dock .dock-info {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dock-title {
+  color: #01FFFF;
+  text-align: center;
+  font-family: Barlow;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.dock-score {
+  color: #FFF;
+  text-align: center;
+  font-family: Barlow;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.chess-pieces {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  background: url('../assets/game/right_bg.svg');
+  width: 152px;
+  height: 273px;
+  background-size: cover;
+}
+
+.pieces-box {
+  display: flex;
+  align-items: end;
+}
+
+.chess-pieces .chess-piece {
+  background-size: 100% 100%;
+}
+
+.chess-piece {
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: transform 0.3s ease-in-out;
+  z-index: 10;
+}
+
+
+
+
+
+
+
+
+/* .chess-piece {
+  width: 150px;
+  height: 30px;
+} */
+
 .game_result_modal {
   position: fixed;
   width: 100%;
@@ -947,6 +1430,7 @@ const turn = async (
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+
 .result_modal_bg {
   position: absolute;
   left: 0;
@@ -956,6 +1440,7 @@ const turn = async (
   background: rgba(16, 11, 46, 0.8);
   backdrop-filter: blur(4px);
 }
+
 .result_modal_bg_win {
   background-image: url("../assets/game/light2.png");
   background-repeat: no-repeat;
@@ -967,6 +1452,7 @@ const turn = async (
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+
 .result_modal_container {
   position: absolute;
   left: 0;
@@ -979,14 +1465,17 @@ const turn = async (
   align-items: center;
   justify-content: center;
 }
+
 .result_modal_img {
   width: 640px;
   height: 545px;
 }
+
 .result_modal_img img {
   width: 100%;
   height: 100%;
 }
+
 .result_close {
   width: 82px;
   height: 34px;
@@ -1012,6 +1501,7 @@ const turn = async (
   align-items: center;
   box-sizing: border-box;
 }
+
 .regulation_box {
   position: absolute;
   width: 128px;
@@ -1045,6 +1535,7 @@ const turn = async (
   align-items: center;
   justify-content: center;
 }
+
 .game_logo {
   width: 200px;
   height: 184px;
@@ -1052,6 +1543,7 @@ const turn = async (
   background-position: center;
   background-size: 100% 100%;
 }
+
 .name {
   color: #01ffff;
   font-family: "Barlow";
@@ -1070,6 +1562,7 @@ const turn = async (
   color: #ffffff;
   text-shadow: 2px 2px 12px rgba(1, 255, 255, 0.5);
 }
+
 .game_content {
   width: 100%;
   max-width: 1200px;
@@ -1079,6 +1572,7 @@ const turn = async (
   justify-content: space-between;
   align-items: center;
 }
+
 .game_item {
   width: 378px;
   height: 405px;
@@ -1086,6 +1580,13 @@ const turn = async (
   background-position: center;
   background-size: cover;
 }
+
+.game_item_big {
+  width: 547px;
+  background: url("../assets/game/game_bg_big.png") no-repeat;
+  background-size: cover;
+}
+
 .title {
   height: 40px;
   width: 100%;
@@ -1097,24 +1598,30 @@ const turn = async (
   font-size: 26px;
   text-align: center;
 }
+
 .title_me {
   color: #8cfea5;
   text-shadow: 2px 2px 18px #01ffff;
 }
+
 .title_opponent {
   color: #ffcce6;
   text-shadow: 0px 0.978254px 11.7391px #fc52ff;
 }
+
 .game_chessboard {
   width: 302px;
   height: 302px;
   margin: 24px 38px 38px;
 }
+
 .chessboard_item {
   width: 30.2px;
   height: 30.2px;
   box-sizing: border-box;
+  border: 1px solid #97C0FF;
 }
+
 .chessboard_me {
   text-shadow: 0px 0px 6px rgba(1, 255, 266, 0.5);
   color: #8cfea5;
@@ -1124,6 +1631,7 @@ const turn = async (
   text-shadow: 0px 0.978254px 8px rgba(252, 82, 255, 0.5);
   color: #ffcce5;
 }
+
 .game_pk {
   width: 294px;
   height: 91px;
@@ -1131,6 +1639,7 @@ const turn = async (
   background-position: center;
   background-size: cover;
 }
+
 .btn_list {
   width: 700px;
   margin: 0 auto;
@@ -1138,6 +1647,7 @@ const turn = async (
   justify-content: space-between;
   align-items: center;
 }
+
 .btn-item {
   font-size: 14px;
   font-family: "Barlow";
@@ -1151,25 +1661,30 @@ const turn = async (
   border-radius: 100px;
   color: #0d041f;
 }
+
 .btn-item-default {
   background: linear-gradient(180deg, #ffffff 0%, #01ffff 100%);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 100px;
 }
+
 .btn-item-disabled {
   background: linear-gradient(180deg, #63d2eb 0%, #2ca8c4 100%) !important;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   border-radius: 100px;
 }
+
 @media screen and (max-height: 770px) {
   .game_logo {
     scale: 0.9;
     transform-origin: top;
   }
+
   .game_item_me {
     scale: 0.9;
     transform-origin: top left;
   }
+
   .game_item_opponent {
     scale: 0.9;
     transform-origin: top right;

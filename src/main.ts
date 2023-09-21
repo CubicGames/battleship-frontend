@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import { createStore } from 'vuex';
-
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 import App from "./App.vue";
 import { EthosConnectPlugin, type EthosConfiguration } from "ethos-connect-vue";
 import "./assets/main.css";
@@ -18,16 +19,45 @@ const vuetify = createVuetify({
 
 const config: EthosConfiguration = {
   apiKey: "vue-example-app",
-  chain : "sui:mainnet",
-  network : "https://fullnode.mainnet.sui.io/",
+  // chain : "sui:mainnet",
+  // network : "https://fullnode.mainnet.sui.io/",
+  chain : "sui:testnet",
+ network : "https://fullnode.testnet.sui.io/",
   walletAppUrl : "https://ethoswallet.xyz",
 };
+
+
+interface ChessPiece {
+  id: string;
+  imageUrl: string;
+  direction: number;
+  size: number;
+  // coordinate: Array<Array<string>>;
+  coordinate: any;
+  defaultImg?: any;
+  rotateImg?: any;
+  isDisabled?: number;
+}
+
+interface ChessPieceInstance {
+  pieceId: string | null;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+  piece?: ChessPiece;
+}
 
 // Create a new store instance.
 const store = createStore({
   state () {
     return {
+      chessboard: <ChessPieceInstance[][]>([]),
+      chessPieces: <ChessPiece[]>([]),
+      isDockEmpty: false, // 判断船坞有没有船 false 有船   true: 没船    没船就可以开始游戏了
       dialog: false,
+      isNewGameDisabled: false,
       isRandomBoardDisabled: false,
       isStartGameDisabled: true,
       isListGamesDisabled: true,
@@ -75,6 +105,40 @@ const store = createStore({
     }
   },
   mutations: {
+    setChessPieces(state, value) {
+      console.log(value)
+      state.chessPieces = value
+    },
+    addChessPieces(state, { x, val }) {
+      state.chessPieces[x] = val;
+    },
+    resetChessPieces(state, value) {
+      state.chessPieces = value;
+    },
+    resetChessboard(state, value) {
+      state.chessboard = value;
+    },
+    addChessboard(state, { x, val }) {
+      // console.log("走了")
+      // state.myBoard[x][y] = value
+      state.chessboard[x] = val;
+    },
+    setChessboard(state, {x, y, val}) {
+      // console.log("走了2222222")
+      // state.myBoard[x][y] = value
+      state.chessboard[x][y] = val;
+    },
+    changeChessboard(state, {x, y, val}) {
+      // console.log("走了2222222")
+      // state.myBoard[x][y] = value
+      state.chessboard[x][y] = { ...state.chessboard[x][y], ...val};
+    },
+    setIsDockEmpty (state, value) {
+      state.isDockEmpty = value
+    },
+    setIsNewGameDisabled (state, value) {
+      state.isNewGameDisabled = value
+    },
     setDialog (state, value) {
       state.dialog = value
     },
@@ -144,17 +208,36 @@ const store = createStore({
     setMyBoard (state, {value, x, y}) {
       state.myBoard[x][y] = value
     },
-    setMyBoardInShips (state, value) {
-      state.myBoardInShips = value
-    },
+    // setMyBoardInShips (state, value) {
+    //   state.myBoardInShips = value
+    // },
     addToMyBoardInShips (state, value) {
       state.myBoardInShips.push(value)
     },
-    setOpponentBoard (state, {value, x, y}) {
+    setOpponentBoard (state, {value, x, y}: any) {
       //console.log(`opponentBoard=${state.opponentBoard}`)
       state.opponentBoard[x][y] = value
+    },
+    setMyBoardInShips(state, { x, y, z, oldCoordinates }: { x: number; y: number; z: number, oldCoordinates?: [] }) {
+      if (oldCoordinates && oldCoordinates?.length) {
+        console.log("进来了1")
+        console.log(z)
+        // const obj = state.chessPiecesCoordinates?.find((item) => item?.[0] === oldCoordinates?.[0] && item?.[1] === oldCoordinates?.[1]) || [];
+        const index = state.myBoardInShips?.findIndex((item) => item?.[0] == oldCoordinates?.[0] && item?.[1] == oldCoordinates?.[1]);
+        console.log(oldCoordinates)
+        console.log(index);
+        if (index > -1) {
+          console.log("进来了2")
+          const newObj = [ x, y, z]
+          state.myBoardInShips.splice(index, 1, newObj)
+        }
+      } else {
+        console.log("进来了3")
+        state.myBoardInShips.push([ x, y, z]);
+      }
     },
   }
 })
 
-createApp(App).use(EthosConnectPlugin, config).use(store).use(vuetify).mount("#app");
+createApp(App).use(EthosConnectPlugin, config).use(store).use(vuetify).use(ElementPlus).mount("#app");
+
