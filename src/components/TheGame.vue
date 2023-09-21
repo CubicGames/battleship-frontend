@@ -768,7 +768,7 @@ onMounted(() => {
   if (localStorage.getItem("chessPieces") || localStorage.getItem("chessboard")) {
     const _chessPieces = JSON.parse(localStorage.getItem("chessPieces") || '{}');
     const _chessboard = JSON.parse(localStorage.getItem("chessboard") || '{}');
-    const _isLockShip = localStorage.getItem('setIsLockShip');
+    const _isLockShip = localStorage.getItem('setIsLockShip') || '1';
     store.commit("resetChessPieces", _chessPieces);
     store.commit("resetChessboard", _chessboard);
     store.commit("setIsLockShip", _isLockShip);
@@ -1180,7 +1180,7 @@ console.log(store.state.isLockShip)
               <div v-for="(cell, cellIndex) in row" :key="cellIndex" :id="rowIndex + '-' + cellIndex"
                 class="chessboard-cell" :class="{ 'occupied': cell && cell.pieceId !== null }"
                 @drop="drop($event, cellIndex, rowIndex, cell?.piece, '1')" @dragover.prevent>
-                <el-tooltip :disabled="store.state.isLockShip == '1'" class="box-item" effect="dark"
+                <!-- <el-tooltip :disabled="store.state.isLockShip == '1'" class="box-item" effect="dark"
                   content="Click to rotate 90 degrees" placement="right">
                   <div v-if="cell && cell.pieceId !== null" class="chess-piece" :style="{
                     backgroundImage: `url(${cell.piece?.imageUrl})`,
@@ -1196,7 +1196,34 @@ console.log(store.state.isLockShip)
                   </div>
 
 
+                </el-tooltip> -->
+                <el-tooltip v-if="store.state.isLockShip == '0'" class="box-item" effect="dark"
+                  content="Click to rotate 90 degrees" placement="right">
+                  <div v-if="cell && cell.pieceId !== null" class="chess-piece" :style="{
+                    backgroundImage: `url(${cell.piece?.imageUrl})`,
+                    position: 'absolute',
+                    width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
+                    height: `${cell?.piece?.direction === 1 ? 28 : (30 * (cell?.piece?.size || 0) - 2)}px`,
+                    transformOrigin: 'bottom',
+                    backgroundSize: '100% 100%',
+                    cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
+                  }" :draggable="store.state.isLockShip == '0'"
+                    @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
+                    @click="rotatePiece(cellIndex, rowIndex)">
+                  </div>
                 </el-tooltip>
+                <div v-if="cell && cell.pieceId !== null && store.state.isLockShip == '1'" class="chess-piece" :style="{
+                  backgroundImage: `url(${cell.piece?.imageUrl})`,
+                  position: 'absolute',
+                  width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
+                  height: `${cell?.piece?.direction === 1 ? 28 : (30 * (cell?.piece?.size || 0) - 2)}px`,
+                  transformOrigin: 'bottom',
+                  backgroundSize: '100% 100%',
+                  cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
+                }" :draggable="store.state.isLockShip == '0'"
+                  @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
+                  @click="rotatePiece(cellIndex, rowIndex)">
+                </div>
                 <img v-if="store.state.myBoard[rowIndex][cellIndex] == 'm'" :src="mIcon" />
                 <img class="x-icon" v-if="store.state.myBoard[rowIndex][cellIndex] == 'X'" :src="xIcon" />
               </div>
@@ -1799,5 +1826,6 @@ console.log(store.state.isLockShip)
     scale: 0.9;
     transform-origin: top right;
   }
-}</style>
+}
+</style>
 
