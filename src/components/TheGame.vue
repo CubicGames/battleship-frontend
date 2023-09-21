@@ -21,7 +21,7 @@ import ship3_v_img from '../assets/ship3_v.png';
 import ship4_h_img from '../assets/ship4_h.png';
 import ship4_v_img from '../assets/ship4_v.png';
 import { ElMessage } from 'element-plus'
-
+import mIcon from '../assets/game/m.svg';
 // 新增
 // import { DraggableItem } from "vuedraggable";
 
@@ -264,11 +264,10 @@ const StartGame = async () => {
   store.commit("setGameStarted");
   store.commit("setGameStage", GameStage.WaitJoin);
   // store.commit("setIsRandomBoardDisabled", true);
-  store.commit("setIsNewGameDisabled", true);
+  store.commit("setIsNewGameDisabled", false);
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", true);
-
   getJoinedEventLoop();
 };
 
@@ -293,7 +292,7 @@ const JoinGame = async () => {
   store.commit("setGameStage", GameStage.WaitMove);
   store.commit("setGameStarted");
   // store.commit("setIsRandomBoardDisabled", true);
-  store.commit("setIsNewGameDisabled", true);
+  store.commit("setIsNewGameDisabled", false);
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", true);
@@ -1149,18 +1148,33 @@ const getShipNumFn = () => {
         <h3 class="text-xl text-rose-500 title title_opponent">Opponent</h3>
         <div class="flex flex-col items-center game_chessboard">
           <div v-for="(row, x) in store.state.opponentBoard" :key="x" class="flex">
-            <div v-for="(cell, y) in row" :key="y" @click="MakeShot(x, y)" :class="`border-x border-y border-solid hover:bg-gray-700 flex
-            items-center justify-center material-icons-outlined text-4xl
-            cursor-pointer text-cyan-500 chessboard_item chessboard_opponent`">
-              {{
+            <div v-for="(cell, y) in row" :key="y" @click="MakeShot(x, y)" :class="{
+              'border-x': true,
+               'border-y:': true,
+                'border-solid': true,
+                 'hover:bg-gray-700': true,
+                  'flex': true,
+              'items-center': true,
+               'justify-center': true,
+                'text-4xl': true,
+              'cursor-pointer': true,
+               'text-cyan-500': true,
+                'chessboard_item': true,
+                 chessboard_opponent: true,
+            }">
+              <!-- {{
                 cell === "X"
                 ? "cancel"
                 : cell == "O"
                   ? "circle"
                   : cell == "m"
-                    ? "close"
+                    ? 'close'
                     : ""
-              }}
+              }} -->
+              <span v-if="cell == 'X'">cancel</span>
+              <span v-else-if="cell == 'O'">circle</span>
+              <img v-else-if="cell == 'm'" :src="mIcon"/>
+              <span v-else> </span>
             </div>
           </div>
         </div>

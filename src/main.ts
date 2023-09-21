@@ -233,7 +233,7 @@ const store = createStore({
         }
       } else {
         console.log("进来了3")
-        state.myBoardInShips.push([ x, y, z]);
+        state.myBoardInShips.push([ x.toString(), y.toString(), z.toString()]);
       }
     },
   }
