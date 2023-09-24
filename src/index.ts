@@ -66,6 +66,14 @@ async function GenBoardProofByBoardAndBinaries(board:string[][], wasmPath:string
 }
 
 async function GenShotProof(board:string[][], x: number, y: number, hit: boolean): Promise<any> {
+  const vkey = await fetch('/zk/shot_verification_key.json').then((res) => {
+    return res.json();
+  });
+
+  return await GenShotProofByShotAndBinaries(board, x, y, hit, '/zk/shot_js/shot.wasm', '/zk/zkey/shot_final.zkey', vkey);
+}
+
+async function GenShotProofByShotAndBinaries(board:string[][], x: number, y: number, hit: boolean, wasmPath:string, zkeyPath:string, vkey:any): Promise<any> {
   console.log(`GenShotProof start`)
 
   // instantiate mimc sponge on bn254 curve + store ffjavascript obj reference
@@ -85,13 +93,10 @@ async function GenShotProof(board:string[][], x: number, y: number, hit: boolean
   // compute witness and run through groth16 circuit for proof / signals
   const { proof, publicSignals } = await groth16.fullProve(
     input,
-    '/zk/shot_js/shot.wasm',
-    '/zk/zkey/shot_final.zkey'
+    wasmPath,
+    zkeyPath,
   )
   console.log(`proof=${JSON.stringify(proof, null, 2)}`)
-    const vkey = await fetch('/zk/shot_verification_key.json').then((res) => {
-      return res.json();
-    });
   console.log(`vkey=${JSON.stringify(vkey, null, 2)}`)
   // verify proof locally
   let result = await groth16.verify(
@@ -200,5 +205,6 @@ function hexToArr(hexString: string): any[] {
 export {
 	GenBoardProof,
   GenBoardProofByBoardAndBinaries,
-	GenShotProof
+	GenShotProof,
+  GenShotProofByShotAndBinaries,
 }
