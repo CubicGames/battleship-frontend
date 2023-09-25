@@ -1530,7 +1530,7 @@ console.log(store.state.isLockShip)
 
 .pieces-box {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
 }
 
 .chess-pieces .chess-piece {
