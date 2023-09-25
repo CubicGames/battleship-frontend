@@ -865,19 +865,13 @@ const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: 
   const cell = store.state.chessboard[rowIndex][cellIndex];
   const ImgObj = store.state.chessPieces[Number(pieceId)];
 
-  console.log("------------------------------------uuuuu");
-  // console.log(cell)
-  console.log(ImgObj)
   let allDot = [];
   for (let i = 0; i < store.state.chessPieces.length; i++) {
-    console.log("-----------------------------------bbbbbb")
     if (i != Number(pieceId)) {
       allDot.push(...store.state.chessPieces[i].coordinate);
     }
   }
-  console.log("---------------------------------打印所有的点")
-  console.log(allDot)
-  console.log(store.state.chessPieces)
+
   const dragType = event?.dataTransfer?.getData("type");
   let arr = [];
   if (ImgObj?.direction === 1) {
@@ -946,8 +940,7 @@ const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: 
     }
   }
 
-  console.log("打印arr")
-  console.log(arr)
+
   ImgObj.coordinate = arr;
   ImgObj.isDisabled = 1;
   if (type === 0) {
@@ -957,25 +950,20 @@ const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: 
   }
 
   if (ImgObj && cell) {
-    console.log("-----------------------99")
     cell.pieceId = pieceId;
     cell.piece = ImgObj;
     store.commit("changeChessboard", { x: rowIndex, y: cellIndex, val: { "pieceId": pieceId, "piece": ImgObj } });
   } else {
-    console.log("-----------------------1010")
     cell.pieceId = null;
     cell.piece = undefined;
     store.commit("changeChessboard", { x: rowIndex, y: cellIndex, val: { "pieceId": null, "piece": undefined } });
   }
 
-  console.log(oldCoordinates)
-  console.log(type)
+
   if (oldCoordinates && type) {
-    console.log("--------------------------------------111")
     const rowId = oldCoordinates?.[0];
     const colId = oldCoordinates?.[1];
     if (rowId != rowIndex || colId != cellIndex) {
-      console.log("--------------------------------------222")
       const oldCell = store.state.chessboard[rowId][colId];
       oldCell.pieceId = null;
       oldCell.piece = undefined;
@@ -1025,7 +1013,7 @@ const dragStart = (event: DragEvent, pieceId: string, type: string, imgUrl: any,
   } else {
     event.dataTransfer?.setData("text/plain", pieceId);
     event.dataTransfer?.setData("type", type);
-    event.dataTransfer?.setDragImage(event.target, 0, 0);
+    event.dataTransfer?.setDragImage(event.target, 20, 20);
     // event.dataTransfer?.setDragImage(document.createElement("div"), 0, 0);
 
     if (type === '1') {
@@ -1037,25 +1025,20 @@ const dragStart = (event: DragEvent, pieceId: string, type: string, imgUrl: any,
 
 const drop = (event: DragEvent, cellIndex: number, rowIndex: number, piece: any, dropType: string) => {
   event.stopPropagation()
-  console.log("执行了")
   const pieceId = event?.dataTransfer?.getData("text/plain");
   const type = event?.dataTransfer?.getData("type");
   if (dropType === '2' && type === '1') {
-    console.log("执行了2222222")
     const ImgObj = store.state.chessPieces[Number(pieceId)];
     ImgObj.isDisabled = 0;
   } else {
-    console.log("执行了11111111")
 
     if (pieceId) {
       const obj = store.state.chessPieces?.[Number(pieceId)];
       let old = null;
-      console.log("--------------------------------------555")
-      console.log(type)
+
       if (type === '2') {
         old = obj?.coordinate?.[0];
         old.push(obj?.direction);
-        console.log(old)
       }
 
       // 更新棋盘记录
@@ -1118,10 +1101,7 @@ const getShipNumFn = () => {
   const len1 = store.state.chessPieces?.filter((item) => item.isDisabled === 1).length;
   return len1;
 }
-console.log("--------------------------ppp")
-console.log(store.state.myBoard)
-console.log("--------------------------oooo")
-console.log(store.state.isLockShip)
+
 </script>
 
 <template>
@@ -1245,7 +1225,16 @@ console.log(store.state.isLockShip)
                 }" :draggable='piece?.isDisabled === 0 && store.state.isNewGameDisabled'
                   @dragstart="dragStart($event, piece.id, '1', piece.defaultImg, piece?.isDisabled)"></div>
               </div>
+              <div v-for="piece in store.state.chessPieces" :key="piece.id" class="pieces-box-rotate">
+                <div v-if="true" class="chess-piece" :style="{
+                  backgroundImage: `url(${piece.rotateImg})`,
+                  height: `${30 * piece?.size}px`,
+                  width: '30px',
+                }" :draggable='piece?.isDisabled === 0 && store.state.isNewGameDisabled'
+                  @dragstart="dragStart($event, piece.id, '1', piece.defaultImg, piece?.isDisabled)"></div>
+              </div>
             </div>
+
           </div>
         </div>
 
@@ -1527,10 +1516,21 @@ console.log(store.state.isLockShip)
   height: 273px;
   background-size: cover;
 }
+.chess-pieces-rotate{
+  display: flex;
+}
 
 .pieces-box {
   display: flex;
   align-items: flex-end;
+}
+
+.pieces-box-rotate {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
 }
 
 .chess-pieces .chess-piece {
