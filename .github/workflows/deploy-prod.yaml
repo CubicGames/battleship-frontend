@@ -43,4 +43,4 @@ jobs:
       - name: upload file and invalidate teo
         run: |
             coscmd upload -r ./docs/ /
-            tccli teo CreatePurgeTask --cli-unfold-argument  --cli-unfold-argument --Targets http://battleship.cubicgames.xyz/  --Type purge_url --ZoneId zone-2l9wjhsgzmhu
+            tccli teo CreatePurgeTask  --cli-unfold-argument --Targets http://battleship.cubicgames.xyz/  --Type purge_prefix --ZoneId zone-2l9wjhsgzmhu
