@@ -1013,7 +1013,8 @@ const dragStart = (event: DragEvent, pieceId: string, type: string, imgUrl: any,
   } else {
     event.dataTransfer?.setData("text/plain", pieceId);
     event.dataTransfer?.setData("type", type);
-    event.dataTransfer?.setDragImage(event.target, 15, 18);
+    // event.dataTransfer?.setDragImage(event.target, 15, 18);
+    event.dataTransfer?.setDragImage(event.target, 10, 12);
     // event.dataTransfer?.setDragImage(document.createElement("div"), 0, 0);
 
     if (type === '1') {
