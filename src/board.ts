@@ -69,8 +69,40 @@ function GenerateBoardConfig() {
 	return {board, boardInShips}
 }
 
+function GenerateBoardFromShips(boardInShips: string[][]) {
+  let myBoard = [
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', '', '', ''],
+  ];
+
+  for (const ship of boardInShips) {
+    const x = parseInt(ship[0]);
+    const y = parseInt(ship[1]);
+    const z = parseInt(ship[2]);
+
+    for (let j = 0; j < ship.length; j++) {
+      if (z == 0) {
+          myBoard[x+j][y] = 'O';
+      } else {
+          myBoard[x][y+j] = 'O';
+      }
+    }
+  }
+
+  return myBoard;
+}
+
 export {
-	GenerateBoardConfig
+	GenerateBoardConfig,
+  GenerateBoardFromShips,
 }
 /*
 let {board, boardInShips} = GenerateBoardConfig()
