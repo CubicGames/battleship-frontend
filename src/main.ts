@@ -19,10 +19,10 @@ const vuetify = createVuetify({
 
 const config: EthosConfiguration = {
   apiKey: "vue-example-app",
-  // chain : "sui:mainnet",
-  // network : "https://fullnode.mainnet.sui.io/",
-  chain : "sui:testnet",
- network : "https://fullnode.testnet.sui.io/",
+  // chain : "sui:testnet",
+  // network : "https://fullnode.testnet.sui.io/",
+  chain : "sui:mainnet",
+  network : "https://fullnode.mainnet.sui.io/",
   walletAppUrl : "https://ethoswallet.xyz",
 };
 
@@ -52,6 +52,7 @@ interface ChessPieceInstance {
 // Create a new store instance.
 const store = createStore({
   state () {
+    console.log(`config.chain=${config.chain}, config.network=${config.network}`);
     return {
       chessboard: <ChessPieceInstance[][]>([]),
       chessPieces: <ChessPiece[]>([]),

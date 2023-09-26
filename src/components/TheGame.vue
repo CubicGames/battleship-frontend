@@ -1059,6 +1059,7 @@ const drop = (event: DragEvent, cellIndex: number, rowIndex: number, dropType: s
 };
 
 const NewGameFn = () => {
+  console.log(`BATTLESHIP_CONTRACT=${BATTLESHIP_CONTRACT}, STATE_OBJECT_ID=${STATE_OBJECT_ID}`);
   localStorage.removeItem("chessPieces")
   localStorage.removeItem("chessboard")
   localStorage.removeItem("setIsLockShip")
