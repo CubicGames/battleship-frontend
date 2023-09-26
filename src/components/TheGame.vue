@@ -1112,8 +1112,7 @@ const getShipNumFn = () => {
 </script>
 
 <template>
-  <!-- <div v-if="store.state.dialog" class="game_result_modal"> -->
-    <div class="game_result_modal">
+  <div v-if="store.state.dialog" class="game_result_modal">
     <div :class="[
       'result_modal_bg',
       store.state.gameWinner !== '' &&
