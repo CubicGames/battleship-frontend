@@ -222,7 +222,7 @@ const store = createStore({
       //console.log(`opponentBoard=${state.opponentBoard}`)
       state.opponentBoard[x][y] = value
     },
-    setMyBoardInShips(state, { x, y, z, oldCoordinates }: { x: number; y: number; z: number, oldCoordinates?: [] }) {
+    setMyBoardInShips(state, { x, y, z, sort, oldCoordinates }: { x: number; y: number; z: number, sort: number, oldCoordinates?: [] }) {
       if (oldCoordinates && oldCoordinates?.length) {
         console.log("进来了1")
         console.log(z)
@@ -237,7 +237,8 @@ const store = createStore({
         }
       } else {
         console.log("进来了3")
-        state.myBoardInShips.push([ x.toString(), y.toString(), z.toString()]);
+        state.myBoardInShips[sort] = [ x.toString(), y.toString(), z.toString()]
+        // state.myBoardInShips.push([ x.toString(), y.toString(), z.toString()]);
       }
     },
   }

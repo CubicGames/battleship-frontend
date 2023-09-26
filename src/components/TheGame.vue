@@ -805,7 +805,8 @@ const defaultDataFn = () => {
       direction: 1,   // 水平1 竖直0
       size: 2,
       coordinate: [],
-      isDisabled: 0 // 是否被禁用  0 可拖拽 1 不可拖拽
+      isDisabled: 0, // 是否被禁用  0 可拖拽 1 不可拖拽
+      sort: 4
     },
     {
       id: "1",
@@ -815,7 +816,8 @@ const defaultDataFn = () => {
       direction: 1,
       size: 3,
       coordinate: [],
-      isDisabled: 0
+      isDisabled: 0,
+      sort: 3
     },
     {
       id: "2",
@@ -825,7 +827,8 @@ const defaultDataFn = () => {
       direction: 1,
       size: 3,
       coordinate: [],
-      isDisabled: 0
+      isDisabled: 0,
+      sort: 2
     },
     {
       id: "3",
@@ -835,7 +838,8 @@ const defaultDataFn = () => {
       direction: 1,
       size: 4,
       coordinate: [],
-      isDisabled: 0
+      isDisabled: 0,
+      sort: 1
     },
     {
       id: "4",
@@ -845,7 +849,8 @@ const defaultDataFn = () => {
       direction: 1,
       size: 5,
       coordinate: [],
-      isDisabled: 0
+      isDisabled: 0,
+      sort: 0
     },
   ];
   store.commit("setChessPieces", defaultChessPieces);
@@ -860,7 +865,7 @@ const defaultDataFn = () => {
 // };
 
 // 更新棋盘记录
-const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: number, pieceId: string | null, oldCoordinates?: any[] | null, type?: number) => {
+const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: number, pieceId: string | null, sort: number, oldCoordinates?: any[] | null, type?: number) => {
   // event: 事件对象  cellIndex: 列  rowIndex: 行   pieceId：获取图形id  oldCoordinates 更换位置旧位置的坐标  type：图形变换类型： 0旋转 1拖砖
   const cell = store.state.chessboard[rowIndex][cellIndex];
   const ImgObj = store.state.chessPieces[Number(pieceId)];
@@ -982,7 +987,7 @@ const updateChessboard = (event: DragEvent | null, cellIndex: number, rowIndex: 
 
 
   store.commit("addChessPieces", { x: Number(pieceId), val: ImgObj });
-  store.commit("setMyBoardInShips", { x: rowIndex, y: cellIndex, z: ImgObj?.direction, oldCoordinates });
+  store.commit("setMyBoardInShips", { x: rowIndex, y: cellIndex, z: ImgObj?.direction, sort: sort, oldCoordinates });
   console.log("棋子坐标");
   console.log(store.state.myBoardInShips);
 };
@@ -1001,7 +1006,7 @@ const rotatePiece = (cellIndex: number, rowIndex: number) => {
     // obj.direction = obj.direction == 0 ? 1 : 0;
     // cell.piece = obj;
 
-    updateChessboard(null, cellIndex, rowIndex, cell.pieceId, [rowIndex, cellIndex, obj.direction], 0); // 重新记录坐标
+    updateChessboard(null, cellIndex, rowIndex, cell.pieceId, obj.sort, [rowIndex, cellIndex, obj.direction], 0); // 重新记录坐标
   }
 };
 
@@ -1043,7 +1048,7 @@ const drop = (event: DragEvent, cellIndex: number, rowIndex: number, piece: any,
       }
 
       // 更新棋盘记录
-      updateChessboard(event, cellIndex, rowIndex, pieceId, old, 1);
+      updateChessboard(event, cellIndex, rowIndex, pieceId, obj.sort, old, 1);
 
     }
   }
@@ -1161,26 +1166,10 @@ const getShipNumFn = () => {
               <div v-for="(cell, cellIndex) in row" :key="cellIndex" :id="rowIndex + '-' + cellIndex"
                 class="chessboard-cell" :class="{ 'occupied': cell && cell.pieceId !== null }"
                 @drop="drop($event, cellIndex, rowIndex, cell?.piece, '1')" @dragover.prevent>
-                <!-- <el-tooltip :disabled="store.state.isLockShip == '1'" class="box-item" effect="dark"
-                  content="Click to rotate 90 degrees" placement="right">
-                  <div v-if="cell && cell.pieceId !== null" class="chess-piece" :style="{
-                    backgroundImage: `url(${cell.piece?.imageUrl})`,
-                    position: 'absolute',
-                    width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
-                    height: `${cell?.piece?.direction === 1 ? 28 : (30 * (cell?.piece?.size || 0) - 2)}px`,
-                    transformOrigin: 'bottom',
-                    backgroundSize: '100% 100%',
-                    cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
-                  }" :draggable="store.state.isLockShip == '0'"
-                    @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
-                    @click="rotatePiece(cellIndex, rowIndex)">
-                  </div>
-
-
-                </el-tooltip> -->
+                <!-- 此处用v-if实现tooltip逻辑是因为tooltip组件的disabled属性刷新设置有问题 -->
                 <el-tooltip v-if="store.state.isLockShip == '0'" class="box-item" effect="dark"
                   content="Click to rotate 90 degrees" placement="right">
-                  <div v-if="cell && cell.pieceId !== null" class="chess-piece" :style="{
+                  <div v-if="cell && cell.pieceId !== null" class="chess-piece draggable" :style="{
                     backgroundImage: `url(${cell.piece?.imageUrl})`,
                     position: 'absolute',
                     width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
@@ -1193,7 +1182,7 @@ const getShipNumFn = () => {
                     @click="rotatePiece(cellIndex, rowIndex)">
                   </div>
                 </el-tooltip>
-                <div v-if="cell && cell.pieceId !== null && store.state.isLockShip == '1'" class="chess-piece" :style="{
+                <div v-if="cell && cell.pieceId !== null && store.state.isLockShip == '1'" class="chess-piece draggable" :style="{
                   backgroundImage: `url(${cell.piece?.imageUrl})`,
                   position: 'absolute',
                   width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
@@ -1466,6 +1455,10 @@ const getShipNumFn = () => {
   max-width: max-content;
 }
 
+.chessboard-cell .draggable{
+  cursor: move;
+}
+
 /* .occupied {
   background-color: lightgray;
 } */
@@ -1517,7 +1510,8 @@ const getShipNumFn = () => {
   height: 273px;
   background-size: cover;
 }
-.chess-pieces-rotate{
+
+.chess-pieces-rotate {
   display: flex;
 }
 
