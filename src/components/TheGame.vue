@@ -762,7 +762,7 @@ const turn = async (
 
 
 const SHIP_COUNt_MAX = 5;
-
+let tooltipIdx = '';
 
 onMounted(() => {
   if (localStorage.getItem("chessPieces") || localStorage.getItem("chessboard")) {
@@ -1010,8 +1010,9 @@ const rotatePiece = (cellIndex: number, rowIndex: number) => {
   }
 };
 
-const dragStart = (event: DragEvent, pieceId: string, type: string, imgUrl: any, isDisabled?: number) => {
+const dragStart = (event: DragEvent, pieceId: string, type: string, tooltip: string, isDisabled?: number) => {
   // type 用来区分  拖拽行为是棋盘外到棋盘1    棋盘内拖拽2
+
   if (isDisabled === 1) {
     event.preventDefault;
     return false;
@@ -1029,8 +1030,9 @@ const dragStart = (event: DragEvent, pieceId: string, type: string, imgUrl: any,
   }
 };
 
-const drop = (event: DragEvent, cellIndex: number, rowIndex: number, piece: any, dropType: string) => {
+const drop = (event: DragEvent, cellIndex: number, rowIndex: number, dropType: string) => {
   event.stopPropagation()
+
   const pieceId = event?.dataTransfer?.getData("text/plain");
   const type = event?.dataTransfer?.getData("type");
   if (dropType === '2' && type === '1') {
@@ -1167,8 +1169,8 @@ const getShipNumFn = () => {
                 class="chessboard-cell" :class="{ 'occupied': cell && cell.pieceId !== null }"
                 @drop="drop($event, cellIndex, rowIndex, cell?.piece, '1')" @dragover.prevent>
                 <!-- 此处用v-if实现tooltip逻辑是因为tooltip组件的disabled属性刷新设置有问题 -->
-                <el-tooltip v-if="store.state.isLockShip == '0'" class="box-item" effect="dark"
-                  content="Click to rotate 90 degrees" placement="right">
+                <!-- <el-tooltip v-if="store.state.isLockShip == '0'" class="box-item" effect="dark"
+                  content="Click to rotate 90 degrees" placement="right" auto-close="100">
                   <div v-if="cell && cell.pieceId !== null" class="chess-piece draggable" :style="{
                     backgroundImage: `url(${cell.piece?.imageUrl})`,
                     position: 'absolute',
@@ -1178,11 +1180,11 @@ const getShipNumFn = () => {
                     backgroundSize: '100% 100%',
                     cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
                   }" :draggable="store.state.isLockShip == '0'"
-                    @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
+                    @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.id,)"
                     @click="rotatePiece(cellIndex, rowIndex)">
                   </div>
-                </el-tooltip>
-                <div v-if="cell && cell.pieceId !== null && store.state.isLockShip == '1'" class="chess-piece draggable" :style="{
+                </el-tooltip> -->
+                <!-- <div v-if="cell && cell.pieceId !== null && store.state.isLockShip == '1'" class="chess-piece draggable" :style="{
                   backgroundImage: `url(${cell.piece?.imageUrl})`,
                   position: 'absolute',
                   width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
@@ -1191,8 +1193,22 @@ const getShipNumFn = () => {
                   backgroundSize: '100% 100%',
                   cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
                 }" :draggable="store.state.isLockShip == '0'"
-                  @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.imageUrl,)"
+                  @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.id,)"
                   @click="rotatePiece(cellIndex, rowIndex)">
+                  <div>Click to rotate 90 degrees</div>
+                </div> -->
+                <div v-if="cell && cell.pieceId !== null" class="chess-piece draggable" :style="{
+                  backgroundImage: `url(${cell.piece?.imageUrl})`,
+                  position: 'absolute',
+                  width: `${cell?.piece?.direction === 1 ? (30 * cell?.piece?.size - 2) : 28}px`,
+                  height: `${cell?.piece?.direction === 1 ? 28 : (30 * (cell?.piece?.size || 0) - 2)}px`,
+                  transformOrigin: 'bottom',
+                  backgroundSize: '100% 100%',
+                  cursor: store.state.isLockShip == '0' ? 'grab' : 'no-drop'
+                }" :draggable="store.state.isLockShip == '0'"
+                  @dragstart="dragStart($event, cell.pieceId, '2', cell.piece?.id,)"
+                  @click="rotatePiece(cellIndex, rowIndex)">
+                  <div>Click to rotate 90 degrees</div>
                 </div>
                 <img v-if="store.state.myBoard[rowIndex][cellIndex] == 'm'" :src="mIcon" />
                 <img class="x-icon" v-if="store.state.myBoard[rowIndex][cellIndex] == 'X'" :src="xIcon" />
@@ -1213,7 +1229,7 @@ const getShipNumFn = () => {
                   cursor: piece?.isDisabled !== 1 && store.state.isNewGameDisabled ? 'grab' : 'no-drop',
                   opacity: piece?.isDisabled === 2 ? '0.3' : '1'
                 }" :draggable='piece?.isDisabled === 0 && store.state.isNewGameDisabled'
-                  @dragstart="dragStart($event, piece.id, '1', piece.defaultImg, piece?.isDisabled)"></div>
+                  @dragstart="dragStart($event, piece.id, '1', piece.id, piece?.isDisabled)"></div>
               </div>
               <div v-for="piece in store.state.chessPieces" :key="piece.id" class="pieces-box-rotate">
                 <div v-if="true" class="chess-piece" :style="{
@@ -1221,7 +1237,7 @@ const getShipNumFn = () => {
                   height: `${30 * piece?.size}px`,
                   width: '30px',
                 }" :draggable='piece?.isDisabled === 0 && store.state.isNewGameDisabled'
-                  @dragstart="dragStart($event, piece.id, '1', piece.defaultImg, piece?.isDisabled)"></div>
+                  @dragstart="dragStart($event, piece.id, '1', piece.id, piece?.isDisabled)"></div>
               </div>
             </div>
 
@@ -1410,6 +1426,11 @@ const getShipNumFn = () => {
 </template>
 
 <style scoped>
+
+.chessboard{
+  position: relative;
+  z-index: 1000;
+}
 .chessboard-container {
   position: relative;
   display: flex;
@@ -1455,8 +1476,50 @@ const getShipNumFn = () => {
   max-width: max-content;
 }
 
-.chessboard-cell .draggable{
-  cursor: move;
+.chessboard-cell .draggable {
+  position: relative;
+
+  &>div {
+    display: none;
+  }
+}
+
+.chessboard-cell .draggable:hover {
+  &>div {
+    display: block;
+  }
+}
+
+.draggable>div {
+  position: absolute;
+  right: -210px;
+  top: 0;
+  z-index: 50;
+  color: #ffffff;
+  background: #303133;
+  border-radius: 4px;
+  padding: 5px 11px;
+  font-size: 12px;
+  line-height: 20px;
+  min-width: 10px;
+  width: 200px;
+
+  &::after {
+    border-bottom-color: transparent !important;
+    border-right-color: transparent !important;
+    border-top-left-radius: 2px;
+    border: 1px solid #303133;
+    background: #303133;
+    left: -3px;
+    top: 9px;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    z-index: -1;
+    content: " ";
+    transform: rotate(45deg);
+    box-sizing: border-box;
+  }
 }
 
 /* .occupied {
@@ -1472,6 +1535,8 @@ const getShipNumFn = () => {
   flex-direction: column;
   align-items: center;
   margin-left: 18px;
+  position: relative;
+  z-index: 10;
 }
 
 .my-dock .dock-info {
@@ -1821,6 +1886,5 @@ const getShipNumFn = () => {
     scale: 0.9;
     transform-origin: top right;
   }
-}
-</style>
+}</style>
 
