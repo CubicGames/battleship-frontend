@@ -212,9 +212,9 @@ const store = createStore({
     setMyBoard (state, {value, x, y}) {
       state.myBoard[x][y] = value
     },
-    // setMyBoardInShips (state, value) {
-    //   state.myBoardInShips = value
-    // },
+    resetMyBoardInShips (state, value) {
+      state.myBoardInShips = value
+    },
     // addToMyBoardInShips (state, value) {
     //   state.myBoardInShips.push(value)
     // },

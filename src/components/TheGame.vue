@@ -1090,7 +1090,7 @@ const NewGameFn = () => {
   store.commit("setOpponentAddress", "");
   store.commit("clearCurrentShip");
   store.commit("setNumShipParts", 0);
-  // store.commit("setMyBoardInShips", []);
+  store.commit("resetMyBoardInShips", []);
   for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 10; j++) {
       store.commit("setMyBoard", { value: "", x: i, y: j });
