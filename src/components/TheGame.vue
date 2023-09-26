@@ -1112,7 +1112,8 @@ const getShipNumFn = () => {
 </script>
 
 <template>
-  <div v-if="store.state.dialog" class="game_result_modal">
+  <!-- <div v-if="store.state.dialog" class="game_result_modal"> -->
+    <div class="game_result_modal">
     <div :class="[
       'result_modal_bg',
       store.state.gameWinner !== '' &&
@@ -1623,7 +1624,7 @@ const getShipNumFn = () => {
   background-image: url("../assets/image2.jpg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  z-index: 999;
+  z-index: 9999;
 }
 
 .result_modal_bg {
