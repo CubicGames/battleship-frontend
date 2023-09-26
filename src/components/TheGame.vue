@@ -1013,7 +1013,7 @@ const rotatePiece = (cellIndex: number, rowIndex: number) => {
 const dragStart = (event: DragEvent, pieceId: string, type: string, tooltip: string, isDisabled?: number) => {
   // type 用来区分  拖拽行为是棋盘外到棋盘1    棋盘内拖拽2
 
-  if (isDisabled === 1) {
+  if (isDisabled == 1) {
     event.preventDefault;
     return false;
   } else {
@@ -1032,12 +1032,13 @@ const dragStart = (event: DragEvent, pieceId: string, type: string, tooltip: str
 
 const drop = (event: DragEvent, cellIndex: number, rowIndex: number, dropType: string) => {
   event.stopPropagation()
-
   const pieceId = event?.dataTransfer?.getData("text/plain");
   const type = event?.dataTransfer?.getData("type");
+  console.log(type)
   if (dropType === '2' && type === '1') {
     const ImgObj = store.state.chessPieces[Number(pieceId)];
     ImgObj.isDisabled = 0;
+    event.preventDefault;
   } else {
 
     if (pieceId) {
@@ -1054,8 +1055,6 @@ const drop = (event: DragEvent, cellIndex: number, rowIndex: number, dropType: s
 
     }
   }
-
-
 
 };
 
@@ -1134,7 +1133,7 @@ const getShipNumFn = () => {
     </div>
   </div>
 
-  <main class="pt-2 text-center page_container" @drop="drop($event, null, null, null, '2')" @dragover.prevent>
+  <main class="pt-2 text-center page_container" @drop="drop($event, null, null, '2')" @dragover.prevent>
     <div class="text-3xl font-mono font-bold italic text-blue-400 game_info">
       <div class="game_number">
         <span class="name">Duo Code</span>
@@ -1162,12 +1161,12 @@ const getShipNumFn = () => {
         'game_item_big': getShipNumFn() < SHIP_COUNt_MAX
       }">
         <h3 class="text-xl text-rose-500 title title_me">Me</h3>
-        <div class="chessboard-container" @drop="drop($event, null, null, null, '2')" @dragover.prevent>
+        <div class="chessboard-container" @drop="drop($event, null, null, '2')" @dragover.prevent>
           <div class="chessboard">
             <div v-for="(row, rowIndex) in store.state.chessboard" :key="rowIndex" class="chessboard-row">
               <div v-for="(cell, cellIndex) in row" :key="cellIndex" :id="rowIndex + '-' + cellIndex"
                 class="chessboard-cell" :class="{ 'occupied': cell && cell.pieceId !== null }"
-                @drop="drop($event, cellIndex, rowIndex, cell?.piece, '1')" @dragover.prevent>
+                @drop="drop($event, cellIndex, rowIndex, '1')" @dragover.prevent>
                 <!-- 此处用v-if实现tooltip逻辑是因为tooltip组件的disabled属性刷新设置有问题 -->
                 <!-- <el-tooltip v-if="store.state.isLockShip == '0'" class="box-item" effect="dark"
                   content="Click to rotate 90 degrees" placement="right" auto-close="100">
@@ -1215,7 +1214,7 @@ const getShipNumFn = () => {
               </div>
             </div>
           </div>
-          <div v-if="getShipNumFn() < SHIP_COUNt_MAX" class="my-dock">
+          <div v-if="getShipNumFn() < SHIP_COUNt_MAX" class="my-dock" @drop="drop($event, null, null, '2')" @dragover.prevent>
             <div class="dock-info">
               <div class="dock-title">My dock</div>
               <div class="dock-score">{{ getShipNumFn() }}/{{ SHIP_COUNt_MAX }}</div>
@@ -1236,8 +1235,7 @@ const getShipNumFn = () => {
                   backgroundImage: `url(${piece.rotateImg})`,
                   height: `${30 * piece?.size}px`,
                   width: '30px',
-                }" :draggable='piece?.isDisabled === 0 && store.state.isNewGameDisabled'
-                  @dragstart="dragStart($event, piece.id, '1', piece.id, piece?.isDisabled)"></div>
+                }"></div>
               </div>
             </div>
 
