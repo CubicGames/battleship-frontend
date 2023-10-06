@@ -16034,7 +16034,7 @@ var _BCS = class {
       const temp = new _BCS(this);
       return temp.registerStructType(key, type2).ser(key, data, options);
     }
-    throw new Error(`Incorrect type passed into the '.ser()' function. 
+    throw new Error(`Incorrect type passed into the '.ser()' function.
 ${JSON.stringify(type2)}`);
   }
   de(type2, data, encoding) {
@@ -16054,7 +16054,7 @@ ${JSON.stringify(type2)}`);
       const key = this.tempKey();
       return temp.registerStructType(key, type2).de(key, data, encoding);
     }
-    throw new Error(`Incorrect type passed into the '.de()' function. 
+    throw new Error(`Incorrect type passed into the '.de()' function.
 ${JSON.stringify(type2)}`);
   }
   hasType(type2) {
