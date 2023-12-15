@@ -11,7 +11,6 @@ const goToHome = () => {
     <Dialog class="regulation_box"></Dialog>
    <div class="header-right">
     <div class="header-home" :onClick="goToHome">Home</div>
-    <AddressWidget />
    </div>
   </div>
 </template>

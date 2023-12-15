@@ -56,6 +56,7 @@ const store = createStore({
     return {
       chessboard: <ChessPieceInstance[][]>([]),
       chessPieces: <ChessPiece[]>([]),
+      currentEthAccount: null,
       isLockShip: '0', // 棋盘有没有被锁定不允许移动   0未锁定   1锁定 字符串格式
       isDockEmpty: false, // 判断船坞有没有船 false 有船   true: 没船    没船就可以开始游戏了
       dialog: false,
@@ -107,6 +108,9 @@ const store = createStore({
     }
   },
   mutations: {
+    setCurrentEthAccount(state, value) {
+      state.currentEthAccount = value
+    },
     setChessPieces(state, value) {
       console.log(value)
       state.chessPieces = value
