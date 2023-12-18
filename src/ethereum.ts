@@ -25,11 +25,14 @@ let intervalId
 //const contractAddr = "0x50Cac95d0BE5b7fAB70d82DA134f0951fC306699";
 //const contractAddr = "0x8C00267690aC784d5970D2055152f16b699c0269";
 
-// b2 zkevm test dev
+// b2 zkevm dev
 //const contractAddr = "0x5970E9936727F47C4F404F31d4dC0D326d2186C7"
 //const contractAddr = "0x67596416cbe04a7aBB31e718dEbc7ce62F169224"
 //const contractAddr = "0xA4cc2705db7d59128Ac88B07221265C252D63F7c" // 2 hits
-const contractAddr = "0x850DA367F7460c32ed15452779E42F41Aa1D1989" // 17 hits
+//const contractAddr = "0x850DA367F7460c32ed15452779E42F41Aa1D1989" // 17 hits
+
+// b2 zkevm testnet
+const contractAddr = "0x5970E9936727F47C4F404F31d4dC0D326d2186C7" // 17 hits
 
 const contractListening = new Contract(contractAddr, ABI, provider)
 
