@@ -2,9 +2,6 @@
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 
-//import { ConnectEthereum, provider, ABI } from "../ethereum"
-import { ConnectWalletEth, checkConnectedWalletExist, NewGameEth, ListGamesEth, JoinGameEth, FirstTurnEth,
-TurnEth } from "../ethereum"
 import { ethosForVue, TransactionBlock } from "ethos-connect-vue";
 import { BATTLESHIP_CONTRACT, STATE_OBJECT_ID } from "../constants";
 import { GenerateBoardConfig } from "../board";
@@ -165,7 +162,6 @@ const MakeShot = async (x: number, y: number) => {
   if (store.state.gameStage != GameStage.MyTurn) return;
   if (store.state.opponentBoard[x][y] !== "") return;
 
-  BigInt.prototype.toJSON = function() { return this.toString() };
   console.log(
     `store.state.opponentLastShot =${JSON.stringify(
       store.state.opponentLastShot,
@@ -173,19 +169,11 @@ const MakeShot = async (x: number, y: number) => {
       2
     )}`
   );
-  console.log(`store.state.gameIndex=${store.state.gameIndex}`);
   if (store.state.gameIndex !== -1) {
     // game creator
     if (store.state.opponentLastShot.x == -1) {
-      if (store.state.currentEthAccount) {
-        await FirstTurnEth(store.state.gameIndex, x, y);
-      } else {
-        await firstTurn(store.state.gameIndex, x, y);
-      }
+      await firstTurn(store.state.gameIndex, x, y);
     } else {
-      if (store.state.currentEthAccount) {
-        await TurnEth(store.state.gameIndex, store.state.hit, x, y);
-      } else {
       await turn(
         store.state.myBoardInShips,
         store.state.gameIndex,
@@ -193,12 +181,8 @@ const MakeShot = async (x: number, y: number) => {
         x,
         y
       );
-      }
     }
   } else {
-      if (store.state.currentEthAccount) {
-        await TurnEth(store.state.toJoinGameIndex, store.state.hit, x, y);
-      } else {
     await turn(
       store.state.myBoardInShips,
       store.state.toJoinGameIndex,
@@ -206,7 +190,6 @@ const MakeShot = async (x: number, y: number) => {
       x,
       y
     );
-    }
   }
 
   store.commit("setOpponentBoard", { value: "m", x, y });
@@ -216,11 +199,6 @@ const MakeShot = async (x: number, y: number) => {
 
 const ListGames = async () => {
   console.log("List games");
-
-  if (store.state.currentEthAccount) {
-     await ListGamesEth(store)
-     return;
-  }
 
   const result = await context.wallet.provider.getObject({
     id: STATE_OBJECT_ID,
@@ -299,11 +277,7 @@ const StartGame = async () => {
   localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
   localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
 
-  if (store.state.currentEthAccount) {
-    await NewGameEth(store.state.myBoardInShips, store, GameStage.MyTurn, GameStage.GameOver)
-  } else {
-    await createGame(store.state.myBoardInShips);
-  }
+  await createGame(store.state.myBoardInShips);
 
   store.commit("setGameStarted");
   store.commit("setGameStage", GameStage.WaitJoin);
@@ -312,9 +286,7 @@ const StartGame = async () => {
   store.commit("setIsStartGameDisabled", true);
   store.commit("setIsListGamesDisabled", true);
   store.commit("setIsJoinGameDisabled", true);
-  if (!store.state.currentEthAccount) {
-    getJoinedEventLoop();
-  }
+  getJoinedEventLoop();
 };
 
 const JoinGame = async () => {
@@ -349,12 +321,7 @@ const JoinGame = async () => {
   localStorage.setItem("isLockShip", '1');
   localStorage.setItem("chessPieces", JSON.stringify(store.state.chessPieces));
   localStorage.setItem("chessboard", JSON.stringify(store.state.chessboard));
-
-  if (store.state.currentEthAccount) {
-    await JoinGameEth(store.state.toJoinGameIndex, store.state.myBoardInShips, store, GameStage.MyTurn, GameStage.GameOver)
-  } else {
-    await joinGame(store.state.toJoinGameIndex, store.state.myBoardInShips);
-  }
+  await joinGame(store.state.toJoinGameIndex, store.state.myBoardInShips);
 
   store.commit("setGameStage", GameStage.WaitMove);
   store.commit("setGameStarted");
@@ -798,7 +765,6 @@ const SHIP_COUNt_MAX = 5;
 let tooltipIdx = '';
 
 onMounted(() => {
-  checkConnectedWalletExist(store)
   if (localStorage.getItem("chessPieces") || localStorage.getItem("chessboard")) {
     const _chessPieces = JSON.parse(localStorage.getItem("chessPieces") || '{}');
     const _chessboard = JSON.parse(localStorage.getItem("chessboard") || '{}');
@@ -1092,7 +1058,7 @@ const drop = (event: DragEvent, cellIndex: number, rowIndex: number, dropType: s
 
 };
 
-const NewGameFn = async () => {
+const NewGameFn = () => {
   console.log(`BATTLESHIP_CONTRACT=${BATTLESHIP_CONTRACT}, STATE_OBJECT_ID=${STATE_OBJECT_ID}`);
   localStorage.removeItem("chessPieces")
   localStorage.removeItem("chessboard")
@@ -1147,22 +1113,6 @@ const getShipNumFn = () => {
 </script>
 
 <template>
-<div v-if="!store.state.currentEthAccount">
-      <button :class="{
-	'float-right': true,
-        'px-5': true,
-        'py-2': true,
-        'font-bold': true,
-        'btn-item-disabled': true,
-        'btn-item': true,
-      }" @click="ConnectWalletEth(store)">
-        <span :class="{
-        }">Connect Ethereum Wallet</span>
-      </button>
-</div>
-<div v-if="store.state.currentEthAccount" class="float-right text-white">
-{{store.state.currentEthAccount.slice(0,6) + "..." + store.state.currentEthAccount.slice(-4)}}</div>
-
   <div v-if="store.state.dialog" class="game_result_modal">
     <div :class="[
       'result_modal_bg',
@@ -1470,11 +1420,8 @@ const getShipNumFn = () => {
           'opacity-30': store.state.isJoinGameDisabled ? true : false,
         }">JOIN GAME</span>
       </button>
-
     </div>
-
   </main>
-
 </template>
 
 <style scoped>
